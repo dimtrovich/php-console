@@ -296,16 +296,79 @@ trait InteractsWithOutput
     /**
      * Display a table.
      *
-     * @param array<array<string, mixed>> $rows   Table rows
-     * @param array<string, mixed>        $styles Table styles
+     * Supports two signatures:
+     * 1. Old signature: table(array $rows, array $styles = [])
+     *    Where $rows is already in the format expected by adhocore/cli
+     * 2. New signature: table(array $headers, array $rows, array $styles = [])
+     *    Where $headers is a 1D array and $rows is a 2D array
      *
-     * @return self
+     * @param array<array<string, mixed>>|array<string> $headers Table headers
+     * @param array<array<string, mixed>>|array<string, mixed> $rows Table rows
+     * @param array<string, mixed> $styles Table styles (only for new signature)
      */
-    public function table(array $rows, array $styles = []): self
+    public function table(array $headers, array $rows = [], array $styles = []): self
     {
+        // Check if this is the old signature (first param is 2D array)
+        if ($this->isTwoDimensionalArray($headers)) {
+            // Old signature: table($rows, $styles)
+            $styles = $rows;
+			$rows = $headers;
+        } else {
+			// Convert headers and rows to format expected by adhocore/cli
+			$rows = $this->formatTableData($headers, $rows);
+		}
+
         $this->writer->table($rows, $styles);
 
         return $this;
+    }
+
+    /**
+     * Check if an array is two-dimensional.
+     */
+    private function isTwoDimensionalArray(array $array): bool
+    {
+        if ($array === []) {
+            return false;
+        }
+
+        $firstElement = reset($array);
+
+        // Check if first element is an array (2D)
+        if (! is_array($firstElement)) {
+            return false;
+        }
+
+        // Check if it's an associative array (old format has associative arrays)
+        // The old format has rows like ['name' => 'John', 'age' => 30]
+        return ! array_is_list($firstElement);
+    }
+
+    /**
+     * Format table data from header/rows format to adhocore/cli format.
+     *
+     * @param array<string>                $headers Table headers
+     * @param array<array<string|mixed>>   $rows    Table rows
+     *
+     * @return array<array<string, mixed>> Formatted rows
+     */
+    private function formatTableData(array $headers, array $rows): array
+    {
+        $formattedRows = [];
+
+        foreach ($rows as $row) {
+            $formattedRow = [];
+
+            foreach ($headers as $index => $header) {
+                // Use header as key, value from row at same index
+                $value = $row[$index] ?? '';
+                $formattedRow[$header] = $value;
+            }
+
+            $formattedRows[] = $formattedRow;
+        }
+
+        return $formattedRows;
     }
 
     /**
