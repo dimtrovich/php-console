@@ -1,7 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 return [
-    // main translations
+    // Main translations
     'Arguments'                                 => 'Arguments',
     'Choice'                                    => 'Choix',
     'Choices (comma separated)'                 => 'Choix (séparés par des virgules)',
@@ -25,12 +27,17 @@ return [
     'version'                                   => 'version',
     'Verbosity level'                           => 'Niveau de verbosité',
     '%1$s "%2$s" is required'                   => '%1$s "%2$s" est obligatoire',
+	'Choose an option' 							=> 'Choisissez une option',
+	'Description'                               => 'Description',
+	'Statistics'                                => 'Statistiques',
+	'Value must be one of: %s'              	=> 'La valeur doit être l\'une des suivantes : %s',
 
-    // exceptions
+    // Exceptions
     'Only last argument can be variadic'                       => 'Seul le dernier argument peut être variadique',
     'Bad program could not be started.'                        => 'Le programme défectueux n\'a pas pu être démarré.',
     'Command "%s" already added'                               => 'La commande "%s" a déjà été ajoutée',
     'Command "%s" does not exist'                              => 'La commande "%s" n\'existe pas',
+    'Command "%s" is invalid'                                   => 'La commande "%s" est invalide',
     'Configuration option value is required'                   => 'La valeur de l\'option de configuration est requise',
     'Rows must be array of assoc arrays, %s given'             => 'Les lignes doivent être un tableau de tableaux associatifs, %s donné',
     'Option "%s" not registered'                               => 'L\'option "%s" n\'est pas enregistrée',
@@ -44,4 +51,5 @@ return [
     'Timeout occurred, process terminated.'                    => 'Délai dépassé, processus interrompu.',
     'Style "%s" not defined'                                   => 'Style "%s" non défini',
     'Trying to set empty or invalid style'                     => 'Tentative de définir un style vide ou invalide',
+	'Invalid property: "%s"'								   => 'Propriété invalide : "%s"',
 ];

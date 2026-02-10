@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlitzPHP\Console\Traits;
 
 use Ahc\Cli\Input\Reader;
@@ -9,129 +11,24 @@ use InvalidArgumentException;
 use function Ahc\Cli\t;
 
 /**
+ * Provides interaction with user input.
+ *
  * @property Interactor $io
- * @property Reader $reader
+ * @property Reader     $reader
+ *
+ * @package BlitzPHP\Console\Traits
  */
 trait InteractsWithInput
 {
-	/**
-     * Demander à l'utilisateur d'entrer une donnée
-     */
-    public function ask(string $question, mixed $default = null): mixed
-    {
-        return $this->prompt($question, $default);
-    }
-
-	/**
-     * Demander à l'utilisateur une entrée secrète (alias de promptHidden)
-     */
-    public function secret(string $text, ?callable $fn = null, int $retry = 3): mixed
-    {
-        return $this->promptHidden($text, $fn, $retry);
-    }
-
-	/**
-     * Demander avec validation et complétion
-     */
-    public function askWithCompletion(string $question, array $choices, mixed $default = null): mixed
-    {
-        return $this->prompt($question, $default, function ($input) use ($choices) {
-            if (!in_array($input, $choices)) {
-                throw new InvalidArgumentException("La valeur doit être parmi: " . implode(', ', $choices));
-            }
-            return $input;
-        });
-    }
-
-	/**
-     * Laissez l'utilisateur faire un choix parmi les choix disponibles.
-     *
-     * @param string $question    Texte d'invite.
-     * @param array  $choices Choix possibles pour l'utilisateur.
-     * @param mixed  $default Valeur par défaut - si non choisie ou invalide.
-     * @param bool   $case    Si l'entrée utilisateur doit être sensible à la casse.
-     *
-     * @return mixed Entrée utilisateur ou valeur par défaut.
-     */
-    public function choice(string $question, array $choices, $default = null, bool $case = false): mixed
-    {
-		$this->writer->question($question)->eol();
-
-		foreach ($choices as $key => $value) {
-			$this->writer->choice(str_pad("  [$key]", 6))->answer($value)->eol();
-		}
-
-		$choice = $this->prompt(t('Choice'));
-
-		return $this->validChoice($choice, $choices, $default, $case);
-    }
-
-	/**
-     *
-     */
-    protected function validChoice($choice, array $choices, mixed $default, bool $case): mixed
-    {
-		if (array_key_exists($choice, $choices)) {
-			return $choices[$choice];
-		}
-
-		$fn = ['\strcasecmp', '\strcmp'][(int) $case];
-
-        foreach ($choices as $option) {
-            if ($fn($choice, $option) == 0) {
-                return $option;
-            }
-        }
-
-		return $choices[$default] ?? $default;
-    }
-
     /**
-     * Laissez l'utilisateur faire plusieurs choix parmi les choix disponibles.
+     * Prompt the user for input.
      *
-     * @param string $question    Texte d'invite.
-     * @param array  $choices Choix possibles pour l'utilisateur.
-     * @param mixed  $default Valeur par défaut - si non choisie ou invalide.
-     * @param bool   $case    Si l'entrée utilisateur doit être sensible à la casse.
+     * @param string          $text    Prompt text
+     * @param mixed|null      $default Default value
+     * @param callable|null   $fn      Validator/sanitizer callback
+     * @param int             $retry   Number of retries on failure
      *
-     * @return array Entrée utilisateur ou valeur par défaut.
-     */
-    public function choices(string $question, array $choices, $default = null, bool $case = false): array
-    {
-		$this->writer->question($question)->eol();
-
-		foreach ($choices as $key => $value) {
-			$this->writer->choice(str_pad("  [$key]", 6))->answer($value)->eol();
-		}
-
-		$choice = $this->prompt(t('Choices (comma separated)'));
-
-		if (is_string($choice)) {
-            $choice = explode(',', str_replace(' ', '', $choice));
-        }
-
-        $valid = array_map(fn($option) => $this->validChoice($option, $choices, $default, $case), $choice);
-
-        return array_values(array_unique(array_filter($valid)));
-    }
-
-    /**
-     * Confirme si l'utilisateur accepte une question posée par le texte donné.
-     *
-     * @param string $default `y|n`
-     */
-    public function confirm(string $text, string $default = 'y'): bool
-    {
-        return $this->io->confirm($text, $default);
-    }
-
-    /**
-     * Demander à l'utilisateur d'entrer une donnée
-     *
-     * @param callable|null $fn      L'assainisseur/validateur pour l'entrée utilisateur
-     *                               Tout message d'exception est imprimé et démandé à nouveau.
-     * @param int           $retry   Combien de fois encore pour réessayer en cas d'échec.
-     * @param mixed|null    $default
+     * @return mixed User input
      */
     public function prompt(string $text, $default = null, ?callable $fn = null, int $retry = 3): mixed
     {
@@ -139,14 +36,157 @@ trait InteractsWithInput
     }
 
     /**
-     * Demander à l'utilisateur une entrée secrète comme un mot de passe. Actuellement pour unix uniquement.
+     * Prompt the user for hidden input (like password).
      *
-     * @param callable|null $fn    L'assainisseur/validateur pour l'entrée utilisateur
-     *                             Tout message d'exception est imprimé en tant qu'erreur.
-     * @param int           $retry Combien de fois encore pour réessayer en cas d'échec.
+     * @param string          $text  Prompt text
+     * @param callable|null   $fn    Validator/sanitizer callback
+     * @param int             $retry Number of retries on failure
+     *
+     * @return mixed User input
      */
     public function promptHidden(string $text, ?callable $fn = null, int $retry = 3): mixed
     {
         return $this->io->promptHidden($text, $fn, $retry);
+    }
+
+    /**
+     * Ask the user for input (alias of prompt).
+     *
+     * @param string        $question Question text
+     * @param mixed|null    $default  Default value
+     *
+     * @return mixed User input
+     */
+    public function ask(string $question, mixed $default = null): mixed
+    {
+        return $this->prompt($question, $default);
+    }
+
+    /**
+     * Ask the user for secret input (alias of promptHidden).
+     *
+     * @param string        $text  Prompt text
+     * @param callable|null $fn    Validator/sanitizer callback
+     * @param int           $retry Number of retries on failure
+     *
+     * @return mixed User input
+     */
+    public function secret(string $text, ?callable $fn = null, int $retry = 3): mixed
+    {
+        return $this->promptHidden($text, $fn, $retry);
+    }
+
+    /**
+     * Ask with auto-completion from given choices.
+     *
+     * @param string        $question Prompt question
+     * @param array<string> $choices  Available choices
+     * @param mixed|null    $default  Default value
+     *
+     * @return mixed User input
+     */
+    public function askWithCompletion(string $question, array $choices, mixed $default = null): mixed
+    {
+        return $this->prompt($question, $default, function ($input) use ($choices) {
+            if (!in_array($input, $choices, true)) {
+                throw new InvalidArgumentException(
+                    t('Value must be one of: %s', [implode(', ', $choices)])
+                );
+            }
+
+            return $input;
+        });
+    }
+
+    /**
+     * Let the user make a single choice from available choices.
+     *
+     * @param string        $question Prompt question
+     * @param array<string> $choices  Available choices
+     * @param mixed|null    $default  Default value if not chosen or invalid
+     * @param bool          $case     Whether user input should be case-sensitive
+     *
+     * @return mixed User choice or default value
+     */
+    public function choice(string $question, array $choices, $default = null, bool $case = false): mixed
+    {
+        $this->writer->question($question)->eol();
+
+        foreach ($choices as $key => $value) {
+            $this->writer->choice(str_pad("  [$key]", 6))->answer($value)->eol();
+        }
+
+        $choice = $this->prompt(t('Choice'));
+
+        return $this->validChoice($choice, $choices, $default, $case);
+    }
+
+    /**
+     * Let the user make multiple choices from available choices.
+     *
+     * @param string        $question Prompt question
+     * @param array<string> $choices  Available choices
+     * @param mixed|null    $default  Default value if not chosen or invalid
+     * @param bool          $case     Whether user input should be case-sensitive
+     *
+     * @return array<string> User choices or default values
+     */
+    public function choices(string $question, array $choices, $default = null, bool $case = false): array
+    {
+        $this->writer->question($question)->eol();
+
+        foreach ($choices as $key => $value) {
+            $this->writer->choice(str_pad("  [$key]", 6))->answer($value)->eol();
+        }
+
+        $choice = $this->prompt(t('Choices (comma separated)'));
+
+        if (is_string($choice)) {
+            $choice = explode(',', str_replace(' ', '', $choice));
+        }
+
+        $valid = array_map(fn ($option) => $this->validChoice($option, $choices, $default, $case), $choice);
+
+        return array_values(array_unique(array_filter($valid)));
+    }
+
+    /**
+     * Confirm if the user accepts a question.
+     *
+     * @param string $question Question text
+     * @param string $default  Default answer ('y' or 'n')
+     *
+     * @return bool True if accepted, false otherwise
+     */
+    public function confirm(string $question, string $default = 'y'): bool
+    {
+        return $this->io->confirm($question, $default);
+    }
+
+    /**
+     * Validate a choice against available choices.
+     *
+     * @param mixed         $choice  User choice
+     * @param array<string> $choices Available choices
+     * @param mixed|null    $default Default value
+     * @param bool          $case    Whether comparison should be case-sensitive
+     *
+     * @return mixed Validated choice or default value
+     */
+    protected function validChoice($choice, array $choices, mixed $default, bool $case): mixed
+    {
+        if (array_key_exists($choice, $choices)) {
+            return $choices[$choice];
+        }
+
+        $fn = ['\strcasecmp', '\strcmp'][(int) $case];
+
+        foreach ($choices as $option) {
+            if ($fn($choice, $option) === 0) {
+                return $option;
+            }
+        }
+
+        return $choices[$default] ?? $default;
     }
 }

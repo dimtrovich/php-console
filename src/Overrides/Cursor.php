@@ -1,13 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlitzPHP\Console\Overrides;
 
 use Ahc\Cli\Output\Cursor as AhcCursor;
 
+/**
+ * Extended cursor with additional functionality.
+ *
+ * @package BlitzPHP\Console\Overrides
+ */
 class Cursor extends AhcCursor
 {
     /**
-     * Cache le curseur
+     * Hide the cursor.
+     *
+     * @return string ANSI escape sequence
      */
     public function hide(): string
     {
@@ -15,7 +24,9 @@ class Cursor extends AhcCursor
     }
 
     /**
-     * Affiche le curseur
+     * Show the cursor.
+     *
+     * @return string ANSI escape sequence
      */
     public function show(): string
     {
@@ -23,15 +34,24 @@ class Cursor extends AhcCursor
     }
 
     /**
-     * Va à une colonne spécifique
+     * Move cursor to a specific column.
+     *
+     * @param int $col Column position (negative values move left)
+     *
+     * @return string ANSI escape sequence
      */
     public function col(int $col): string
     {
-		return $col >= 0 ? $this->right($col) : $this->left(abs($col));
+        return $col >= 0 ? $this->right($col) : $this->left(abs($col));
     }
 
     /**
-     * Positionne le curseur
+     * Position cursor at specific row and column.
+     *
+     * @param int $row Row position
+     * @param int $col Column position
+     *
+     * @return string ANSI escape sequence
      */
     public function position(int $row, int $col): string
     {
@@ -39,7 +59,9 @@ class Cursor extends AhcCursor
     }
 
     /**
-     * Sauvegarde la position du curseur
+     * Save cursor position.
+     *
+     * @return string ANSI escape sequence
      */
     public function save(): string
     {
@@ -47,7 +69,9 @@ class Cursor extends AhcCursor
     }
 
     /**
-     * Restaure la position du curseur
+     * Restore cursor position.
+     *
+     * @return string ANSI escape sequence
      */
     public function restore(): string
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlitzPHP\Console\Overrides;
 
 use Ahc\Cli\Output\ProgressBar as AhcProgressBar;
@@ -7,12 +9,36 @@ use Ahc\Cli\Output\Writer;
 
 use function Ahc\Cli\t;
 
+/**
+ * Extended progress bar with additional features.
+ *
+ * @package BlitzPHP\Console\Overrides
+ */
 class ProgressBar extends AhcProgressBar
 {
-	protected array $messages = [];
+    /**
+     * Progress messages.
+     *
+     * @var list<string>
+     */
+    protected array $messages = [];
+
+    /**
+     * Start time.
+     */
     protected float $startTime;
+
+    /**
+     * Current progress value.
+     */
     protected int $current = 0;
 
+    /**
+     * Create a new progress bar.
+     *
+     * @param int|null    $total  Total steps
+     * @param Writer|null $writer Writer instance
+     */
     public function __construct(?int $total = null, ?Writer $writer = null)
     {
         parent::__construct($total, $writer);
@@ -21,21 +47,22 @@ class ProgressBar extends AhcProgressBar
     }
 
     /**
-     * Avance avec un message personnalisé
+     * Advance progress with a custom message.
+     *
+     * @param int    $step    Steps to advance
+     * @param string $message Progress message
      */
     public function advanceWithMessage(int $step = 1, string $message = ''): void
     {
-        $this->current += $step;
-
-        if ($message) {
+        if ($message !== '') {
             $this->messages[] = $message;
         }
 
-        $this->advance($step);
+        $this->advance($step, $message);
     }
 
     /**
-     * Affiche des statistiques
+     * Display progress statistics.
      */
     public function showStats(): void
     {
@@ -43,8 +70,8 @@ class ProgressBar extends AhcProgressBar
         $speed = $this->current > 0 ? $this->current / $elapsed : 0;
 
         $this->writer->colors(sprintf(
-            "\n<yellow>%s:</end> %d items en %.2fs (%.2f items/s)",
-			t('Statistics'),
+            "\n<yellow>%s:</end> %d items in %.2fs (%.2f items/s)",
+            t('Statistics'),
             $this->current,
             $elapsed,
             $speed
@@ -52,6 +79,7 @@ class ProgressBar extends AhcProgressBar
 
         if (!empty($this->messages)) {
             $this->writer->colors('<yellow>' . t('Messages') . ':</end>');
+
             foreach ($this->messages as $message) {
                 $this->writer->write("  • " . $message)->eol();
             }
@@ -59,14 +87,14 @@ class ProgressBar extends AhcProgressBar
     }
 
     /**
-     * Affiche une barre de progression avec pourcentage
+     * Display progress bar with percentage.
      */
     public function display(): void
     {
         if ($this->total) {
-            $percent = (int)(($this->current / $this->total) * 100);
+            $percent   = (int) (($this->current / $this->total) * 100);
             $barLength = 50;
-            $filled = (int)($barLength * $percent / 100);
+            $filled    = (int) ($barLength * $percent / 100);
 
             $bar = str_repeat('█', $filled) . str_repeat('░', $barLength - $filled);
             $this->writer->write(sprintf("\r[%s] %3d%%", $bar, $percent));

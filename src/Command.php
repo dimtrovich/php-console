@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlitzPHP\Console;
 
 use Ahc\Cli\Helper\Terminal;
@@ -14,110 +16,148 @@ use BlitzPHP\Console\Traits\AdvancedFeatures;
 use BlitzPHP\Console\Traits\InteractsWithParameters;
 use InvalidArgumentException;
 
+use function Ahc\Cli\t;
+
 /**
- * Classe de base utilisée pour créer des commandes pour la console
+ * Base class for creating console commands.
  *
- * @param string $alias Alias de la commande
- * @param string $name Nom de la commande
+ * @package BlitzPHP\Console
  */
 abstract class Command
 {
-	use AdvancedFeatures, InteractsWithParameters;
+    use AdvancedFeatures;
+    use InteractsWithParameters;
 
-	/**
-     * Le groupe sous lequel la commande est regroupée dans la liste des commandes.
+    /**
+     * The group under which the command is grouped in the command list.
      */
     protected string $group = '';
 
     /**
-     * Le nom de la commande
+     * The command name.
      */
     protected string $name;
 
     /**
-     * La description courte de la commande
+     * The short description of the command.
      */
     protected string $description = '';
 
     /**
-     * Utilisation de la commande
+     * Command usage.
      */
     protected string $usage = '';
 
     /**
-     * Options de la commande
+     * Command options.
      *
-     * @var array<string, mixed>
+     * @var array<string, array{
+     *      0: string,
+     *      1?: mixed,
+     *      2?: callable|null
+     * }>
      *
-     * @example
-     * `[
-     *      'option' => [string $description, mixed|null $default_value, callable|null $filter]
-     * ]`
+     * @example ['option' => ['description', default_value, filter]]
      */
     protected array $options = [];
 
     /**
-     * La description des arguments de la commande
+     * Command arguments.
      *
-     * @var array<string, mixed>
+     * @var array<string, array{
+     *      0: string,
+     *      1?: mixed
+     * }>
      *
-     * @example
-     * `[
-     *      'argument' => [string $description, mixed|null $default_value]
-     * ]`
+     * @example ['argument' => ['description', default_value]]
      */
     protected array $arguments = [];
 
     /**
-     * L'alias de la commande
+     * The command alias.
      */
     protected string $alias = '';
 
     /**
-     * La version de la commande
+     * The command version.
      */
     protected string $version = '';
 
+    /**
+     * Application instance.
+     */
+    protected Application $app;
 
-	protected Application $app;
-	protected Interactor $io;
+    /**
+     * Interactor instance.
+     */
+    protected Interactor $io;
+
+    /**
+     * Writer instance.
+     */
     protected Writer $writer;
+
+    /**
+     * Reader instance.
+     */
     protected Reader $reader;
+
+    /**
+     * Color instance.
+     */
     protected Color $color;
+
+    /**
+     * Cursor instance.
+     */
     protected Cursor $cursor;
+
+    /**
+     * Terminal instance.
+     */
     protected Terminal $terminal;
 
     /**
-     * Exécution réelle de la commande.
-	 *
-	 * Cette méthode doit être implémentée par les classes qui étendent Command pour définir le comportement de la commande lorsqu'elle est exécutée.
-	 *
-	 * @param array<string, mixed> $params Les paramètres reçus par la commande, comprenant les arguments et les options.
+     * Actual execution of the command.
+     *
+     * This method must be implemented by classes extending Command
+     * to define the behavior of the command when executed.
      */
-    abstract public function handle();
+    abstract public function handle(): mixed;
 
-	/**
-	 * Initalisation des proprieté necessaires
-	 *
-	 * @internal
-	 */
-	public function initialize(Application $app): BaseCommand
+    /**
+     * Initialize necessary properties.
+     *
+     * @internal
+     *
+     * @param Application $app Application instance
+     *
+     * @return BaseCommand Configured command instance
+     */
+    public function initialize(Application $app): BaseCommand
     {
-		$this->app      = $app;
-		$this->io       = $this->app->io();
-		$this->writer   = $this->io->writer();
-		$this->reader   = $this->io->reader();
-		$this->color    = $this->writer->colorizer();
-		$this->cursor   = new Cursor();
-		$this->terminal = $this->writer->terminal();
+        $this->app      = $app;
+        $this->io       = $this->app->io();
+        $this->writer   = $this->io->writer();
+        $this->reader   = $this->io->reader();
+        $this->color    = $this->writer->colorizer();
+        $this->cursor   = new Cursor();
+        $this->terminal = $this->writer->terminal();
 
-		return $this->createCommand();
+        return $this->createCommand();
     }
 
     /**
-     * Peut etre utiliser par la commande pour executer d'autres commandes.
-	 *
-	 * @throws CommandNotFoundException
+     * Call another command.
+     *
+     * @param string                $command   Command name to call
+     * @param array<string, mixed>  $arguments Command arguments
+     * @param array<string, mixed>  $options   Command options
+     *
+     * @return mixed Command execution result
+     *
+     * @throws CommandNotFoundException If command doesn't exist
      */
     public function call(string $command, array $arguments = [], array $options = []): mixed
     {
@@ -125,17 +165,26 @@ abstract class Command
     }
 
     /**
-     * Peut etre utiliser par la commande pour verifier si une commande existe dans la liste des commandes enregistrees
+     * Check if a command exists in the registered commands list.
+     *
+     * @param string $commandName Command name to check
+     *
+     * @return bool True if command exists, false otherwise
      */
     public function commandExists(string $commandName): bool
     {
         return $this->app->commandExists($commandName);
     }
 
-	/**
-     * La chaîne de caractères est remplacée par des titres de la même longueur pour que les descriptions soient bien alignées.
+    /**
+     * Pad a string with spaces for alignment.
      *
-     * @param int $extra Nombre d'espaces supplémentaires à ajouter à la fin
+     * @param string $item   String to pad
+     * @param int    $max    Maximum length
+     * @param int    $extra  Extra spaces to add
+     * @param int    $indent Indentation level
+     *
+     * @return string Padded string
      */
     public function pad(string $item, int $max, int $extra = 2, int $indent = 0): string
     {
@@ -144,53 +193,69 @@ abstract class Command
         return str_pad(str_repeat(' ', $indent) . $item, $max);
     }
 
-
     /**
-     * Facilite l'accès à nos propriétés protégées.
+     * Magic getter for accessing protected properties.
+     *
+     * @param string $key Property name
+     *
+     * @return mixed Property value
+     *
+     * @throws InvalidArgumentException If property is invalid
      */
     public function __get(string $key)
     {
-		if ( in_array($key, ['name', 'alias'])) {
-			return $this->{$key};
-		}
+        if (in_array($key, ['name', 'alias'], true)) {
+            return $this->{$key};
+        }
 
-		throw new InvalidArgumentException(sprintf('Propriete invalide: %s', $key));
+        throw new InvalidArgumentException(t('Invalid property: %s', [$key]));
     }
 
-	private function createCommand(): BaseCommand
-	{
-		$command = new BaseCommand(
+    /**
+     * Create the base command instance.
+     *
+     * @return BaseCommand Configured command instance
+     */
+    private function createCommand(): BaseCommand
+    {
+        $command = new BaseCommand(
             $this->name,
             $this->description,
             false,
             $this->app
         );
 
-		$this->configure($command);
+        $this->configure($command);
 
-		return $command;
-	}
+        return $command;
+    }
 
-	/**
-	 * Configure la commande en définissant ses options, arguments, usage, version, etc.
-	 * Cette méthode peut être surchargée par les classes qui étendent Command pour personnaliser la configuration de la commande.
-	 */
-	protected function configure(BaseCommand $command)
-	{
-		$command->inGroup($this->group) // Defini le groupe auquel appartient la commande
-				->usage($this->usage) // Defini l'usage de la commande
-				->version($this->version); // Defini la version de la commande
+    /**
+     * Configure the command by setting its options, arguments, usage, version, etc.
+     *
+     * This method can be overridden by classes extending Command
+     * to customize the command configuration.
+     *
+     * @param BaseCommand $command Command instance to configure
+     */
+    protected function configure(BaseCommand $command): void
+    {
+        $command->inGroup($this->group)
+                ->usage($this->usage)
+                ->version($this->version);
 
-		$this->defineOptions($command);
-		$this->defineArguments($command);
-	}
+        $this->defineOptions($command);
+        $this->defineArguments($command);
+    }
 
-	/**
-	 * Defini les options de la commande
-	 */
-	protected function defineOptions(BaseCommand $command): void
-	{
-		foreach ($this->options as $option => $value) {
+    /**
+     * Define command options.
+     *
+     * @param BaseCommand $command Command instance
+     */
+    protected function defineOptions(BaseCommand $command): void
+    {
+        foreach ($this->options as $option => $value) {
             $value = (array) $value;
 
             $description = $value[0];
@@ -200,20 +265,23 @@ abstract class Command
 
             $default = $value[1] ?? null;
             $filter  = $value[2] ?? null;
+
             if ($filter !== null && ! is_callable($filter)) {
                 $filter = null;
             }
 
             $command->option($option, $description, $filter, $default);
         }
-	}
+    }
 
-	/**
-	 * Defini les arguments de la commande
-	 */
-	protected function defineArguments(BaseCommand $command): void
-	{
-		foreach ($this->arguments as $argument => $value) {
+    /**
+     * Define command arguments.
+     *
+     * @param BaseCommand $command Command instance
+     */
+    protected function defineArguments(BaseCommand $command): void
+    {
+        foreach ($this->arguments as $argument => $value) {
             $value = (array) $value;
 
             $description = $value[0];
@@ -225,5 +293,5 @@ abstract class Command
 
             $command->argument($argument, $description, $default);
         }
-	}
+    }
 }
