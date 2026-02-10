@@ -22,7 +22,9 @@
         }
     ],
     "require": {
-        "php": "^8.2"
+        "php": "^8.2",
+        "adhocore/cli": "^1.9",
+        "blitz-php/contracts": "^1.14"
     },
     "require-dev": {
         "kahlan/kahlan": "^6.0",
@@ -31,12 +33,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Blitz-php\\Console\\": "src"
+            "BlitzPHP\\Console\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Blitz-php\\Console\\Spec\\": "spec"
+            "BlitzPHP\\Console\\Spec\\": "spec"
         }
     },
     "scripts": {
