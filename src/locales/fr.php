@@ -52,4 +52,5 @@ return [
     'Style "%s" not defined'                                   => 'Style "%s" non défini',
     'Trying to set empty or invalid style'                     => 'Tentative de définir un style vide ou invalide',
 	'Invalid property: "%s"'								   => 'Propriété invalide : "%s"',
+	'Undefined method "%s" called.'							   => 'Méthode indéfinie "%s" appelée.',
 ];

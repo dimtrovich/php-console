@@ -22,6 +22,9 @@ use function Ahc\Cli\t;
  * Base class for creating console commands.
  *
  * @package BlitzPHP\Console
+ *
+ * @method string name() Get the command name.
+ * @method string alias() Get the command alias.
  */
 abstract class Command
 {
@@ -84,9 +87,9 @@ abstract class Command
     protected string $version = '';
 
     /**
-     * Application instance.
+     * Console application instance.
      */
-    protected Application $app;
+    protected Console $app;
 
     /**
      * Interactor instance.
@@ -131,11 +134,11 @@ abstract class Command
      *
      * @internal
      *
-     * @param Application $app Application instance
+     * @param Console $app Console application instance
      *
      * @return BaseCommand Configured command instance
      */
-    public function initialize(Application $app): BaseCommand
+    public function initialize(Console $app): BaseCommand
     {
         $this->app      = $app;
         $this->io       = $this->app->io();
@@ -193,22 +196,23 @@ abstract class Command
         return str_pad(str_repeat(' ', $indent) . $item, $max);
     }
 
-    /**
-     * Magic getter for accessing protected properties.
-     *
-     * @param string $key Property name
-     *
-     * @return mixed Property value
-     *
-     * @throws InvalidArgumentException If property is invalid
-     */
-    public function __get(string $key)
-    {
-        if (in_array($key, ['name', 'alias'], true)) {
-            return $this->{$key};
+	/**
+	 * Magic method to handle dynamic property access.
+	 *
+	 * @param string $name Property name
+	 * @param array  $arguments Method arguments (not used)
+	 *
+	 * @return mixed Property value if exists, otherwise throws an exception
+	 *
+	 * @throws InvalidArgumentException If the property does not exist
+	 */
+    public function __call(string $name, array $arguments = [])
+	{
+		if (property_exists($this, $name)) {
+            return $this->{$name} ?? '';
         }
 
-        throw new InvalidArgumentException(t('Invalid property: %s', [$key]));
+		throw new InvalidArgumentException(t('Undefined method "%s" called.', [$name]));
     }
 
     /**
@@ -242,7 +246,8 @@ abstract class Command
     {
         $command->inGroup($this->group)
                 ->usage($this->usage)
-                ->version($this->version);
+                ->version($this->version)
+				->alias($this->alias);
 
         $this->defineOptions($command);
         $this->defineArguments($command);
