@@ -7,6 +7,8 @@ namespace BlitzPHP\Console\Traits;
 use Ahc\Cli\Helper\Terminal;
 use Ahc\Cli\Output\Color;
 use Ahc\Cli\Output\Writer;
+use BlitzPHP\Console\Components\Alert;
+use BlitzPHP\Console\Components\Badge;
 use BlitzPHP\Console\Overrides\Cursor;
 use BlitzPHP\Console\Overrides\ProgressBar;
 
@@ -23,6 +25,22 @@ use BlitzPHP\Console\Overrides\ProgressBar;
 trait InteractsWithOutput
 {
 	use FormatsOutput;
+
+	 /**
+	  * Get the Alert component instance.
+	  */
+	public function alert(): Alert
+	{
+		return Alert::instance($this->writer);
+	}
+
+	/**
+	 * Get the Badge component instance.
+	 */
+	public function badge(): Badge
+	{
+		return Badge::instance($this->writer);
+	}
 
     /**
      * Display currently executing task.
@@ -166,7 +184,7 @@ trait InteractsWithOutput
         $str    = str_repeat($char, $length);
         $str    = substr($str, 0, $length);
 
-        return $this->comment($str, true);
+        return $this->comment($str);
     }
 
     /**
