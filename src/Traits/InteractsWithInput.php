@@ -17,6 +17,7 @@ use function Ahc\Cli\t;
  * @property Reader     $reader
  *
  * @package BlitzPHP\Console\Traits
+ * @mixin \BlitzPHP\Console\Command
  */
 trait InteractsWithInput
 {

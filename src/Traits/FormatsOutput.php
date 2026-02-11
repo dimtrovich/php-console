@@ -10,6 +10,7 @@ use Ahc\Cli\Output\Writer;
  * Provides methods for formatting console output.
  *
  * @package BlitzPHP\Console\Traits
+ * @mixin \BlitzPHP\Console\Command
  */
 trait FormatsOutput
 {

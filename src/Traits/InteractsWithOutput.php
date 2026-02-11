@@ -21,6 +21,7 @@ use BlitzPHP\Console\Overrides\ProgressBar;
  * @property Writer   $writer
  *
  * @package BlitzPHP\Console\Traits
+ * @mixin \BlitzPHP\Console\Command
  */
 trait InteractsWithOutput
 {

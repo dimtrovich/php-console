@@ -8,6 +8,7 @@ namespace BlitzPHP\Console\Traits;
  * Provides interaction with command parameters (arguments and options).
  *
  * @package BlitzPHP\Console\Traits
+ * @mixin \BlitzPHP\Console\Command
  */
 trait InteractsWithParameters
 {

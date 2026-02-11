@@ -12,6 +12,7 @@ use function Ahc\Cli\t;
  * Provides advanced console features and visualizations.
  *
  * @package BlitzPHP\Console\Traits
+ * @mixin \BlitzPHP\Console\Command
  */
 trait AdvancedFeatures
 {
