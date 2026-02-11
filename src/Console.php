@@ -71,6 +71,17 @@ class Console extends Application
 	 */
 	protected array $commandCached = [];
 
+	/**
+	 * Cache of executed command outputs.
+	 *
+	 * Keys are generated from command name, arguments and options.
+	 * Values are the captured stdout/stderr of the commands.
+	 * This cache prevents re-executing the same command with identical parameters.
+	 *
+	 * @var array<string, string>
+	 */
+	protected array $commandOutputCache = [];
+
     /**
      * Create a new console application.
      *
@@ -167,6 +178,122 @@ class Console extends Application
 
         return $action($arguments, $options, true);
     }
+
+	/**
+     * Call a command silently (without output).
+     *
+     * This method executes a command and suppresses all output.
+     * Useful for calling commands programmatically within other commands.
+     *
+     * @param string                $command   Command name or FQCN
+     * @param array<string, mixed>  $arguments Command arguments
+     * @param array<string, mixed>  $options   Command options
+     *
+     * @return mixed Command execution result
+     *
+     * @throws CommandNotFoundException If command doesn't exist
+     *
+     * @example
+     * ```php
+     * // Clear cache without showing output
+     * $app->callSilent('cache:clear');
+     *
+     * // Run migrations silently in background
+     * $app->callSilent('migrate', ['--force' => true]);
+     * ```
+     */
+    public function callSilent(string $command, array $arguments = [], array $options = []): mixed
+    {
+        ob_start();
+
+        try {
+            $result = $this->call($command, $arguments, $options);
+
+			$key = $this->generateCacheKey($command, $arguments, $options);
+
+            // Get buffered output
+			$this->commandOutputCache[$key] = ob_get_clean() ?: '';
+
+			return $result;
+        } catch (Throwable $e) {
+            // Clean buffer on error
+            ob_end_clean();
+            throw $e;
+        }
+    }
+
+	/**
+	 * Capture the output of a command execution.
+	 * This method executes a command and returns its output as a string.
+	 * Useful for capturing output of commands when called programmatically.
+	 * Note: This method will execute the command only once per unique set of arguments and options,
+	 * and cache the output for subsequent calls with the same parameters.
+	 *
+	 * Example usage:
+	 * ```php
+	 * // Capture output of a command
+	 * $output = $app->captureOutput('list:users', ['--active' => true]);
+	 * echo $output;
+	 * ```
+	 *
+	 * @param string                $command   Command name or FQCN
+	 * @param array<string, mixed>  $arguments Command arguments
+	 * @param array<string, mixed>  $options   Command options
+	 *
+	 * @return string Captured output from the command execution
+	 *
+	 * @throws CommandNotFoundException If command doesn't exist
+	 */
+	public function captureOutput(string $command, array $arguments = [], array $options = []): string
+	{
+		$key = $this->generateCacheKey($command, $arguments, $options);
+
+        if (isset($this->commandOutputCache[$key])) {
+            return $this->commandOutputCache[$key];
+        }
+
+        $this->callSilent($command, $arguments, $options);
+
+        return $this->commandOutputCache[$key] ?? '';
+	}
+
+	/**
+	 * Clear command output cache.
+	 *
+	 * @param string|null $command Specific command name to clear (null = clear all)
+	 */
+	public function clearOutputCache(?string $command = null): self
+	{
+		if ($command === null) {
+			$this->commandOutputCache = [];
+
+			return $this;
+		}
+
+		foreach (array_keys($this->commandOutputCache) as $key) {
+			if (str_starts_with($key, md5($command))) {
+				unset($this->commandOutputCache[$key]);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Check if a command has already been executed with these parameters.
+	 *
+	 * @param string                $command   Command name or FQCN
+	 * @param array<string, mixed>  $arguments Command arguments
+	 * @param array<string, mixed>  $options   Command options
+	 *
+	 * @return bool True if command has already been executed
+	 */
+	public function hasExecuted(string $command, array $arguments = [], array $options = []): bool
+	{
+		$key = $this->generateCacheKey($command, $arguments, $options);
+
+		return isset($this->commandOutputCache[$key]);
+	}
 
     /**
      * Check if a command exists in the registered commands list.
@@ -324,5 +451,26 @@ class Console extends Application
 		}
 
 		return $this->commandCached[$name] = null;
+	}
+
+	/**
+	 * Generate a unique cache key for a command execution.
+	 *
+	 * @param string                $command   Command name or FQCN
+	 * @param array<string, mixed>  $arguments Command arguments
+	 * @param array<string, mixed>  $options   Command options
+	 *
+	 * @return string Unique cache key
+	 */
+	private function generateCacheKey(string $command, array $arguments = [], array $options = []): string
+	{
+		ksort($arguments);
+		ksort($options);
+
+		return md5(serialize([
+			'command'   => $command,
+			'arguments' => $arguments,
+			'options'   => $options,
+		]));
 	}
 }
