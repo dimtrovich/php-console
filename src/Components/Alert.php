@@ -176,7 +176,7 @@ class Alert
     {
         $title = $title ?? $defaultTitle;
 
-        $this->writer->newLine();
+        $this->writer->eol();
 
         // Top border
         $this->renderBorder($message, $type);
@@ -190,7 +190,7 @@ class Alert
         // Bottom border
         $this->renderBorder($message, $type);
 
-        $this->writer->newLine();
+        $this->writer->eol();
 
         return $this;
     }

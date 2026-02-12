@@ -1,0 +1,227 @@
+<?php
+
+use BlitzPHP\Console\Traits\FormatsOutput;
+use Ahc\Cli\Output\Writer;
+use BlitzPHP\Console\Application;
+use Kahlan\Arg;
+
+describe('Traits / FormatsOutput', function () {
+	fileHook(
+		file: 'output-format.test',
+		beforeAll: function() {
+			Application::defineBuilInStyles();
+			$this->getFormatter = function($writer) {
+				$formatter = new class {
+					use FormatsOutput;
+					protected Writer $writer;
+
+					public function setWriter($w) {
+						$this->writer = $w;
+
+						return $this;
+					}
+
+					public function getWriter() {
+						return $this->writer;
+					}
+				};
+
+				return $formatter->setWriter($writer);
+			};
+		},
+		beforeEach: function($files) {
+			$this->writer = new Writer($files[0]);
+			$this->formatter = $this->getFormatter($this->writer);
+		},
+	);
+
+    describe('basic output', function () {
+
+        it('writes a line with color', function () {
+            expect($this->writer)->toReceive('colors')->with('<red>Error message</end>')->once();
+
+            $result = $this->formatter->line('Error message', 'red');
+
+            expect($result)->toBe($this->formatter);
+        });
+
+        it('writes a line without color', function () {
+            expect($this->writer)->toReceive('write')->with('Plain text')->once();
+
+            $this->formatter->line('Plain text');
+        });
+    });
+
+    describe('colored messages', function () {
+
+        it('writes info message', function () {
+            expect($this->writer)->toReceive('info')->with('Information')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->info('Information');
+        });
+
+        it('writes success message', function () {
+            expect($this->writer)->toReceive('ok')->with('Success')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->success('Success');
+        });
+
+        it('writes warning message', function () {
+            expect($this->writer)->toReceive('warn')->with('Warning')->times(2);
+            expect($this->writer)->toReceive('eol')->times(2);
+
+            $this->formatter->warning('Warning');
+            $this->formatter->warn('Warning');
+        });
+
+        it('writes error message', function () {
+            expect($this->writer)->toReceive('error')->with('Error')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->error('Error');
+        });
+
+        it('writes comment message', function () {
+            expect($this->writer)->toReceive('comment')->with('Comment')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->comment('Comment');
+        });
+
+        it('writes question message', function () {
+            expect($this->writer)->toReceive('question')->with('Question?')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->question('Question?');
+        });
+
+        it('writes note message', function () {
+            expect($this->writer)->toReceive('comment')->with('NOTE: This is a note')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->note('This is a note');
+        });
+
+        it('writes notice message', function () {
+            expect($this->writer)->toReceive('info')->with('NOTICE: Important')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->notice('Important');
+        });
+
+        it('writes caution message', function () {
+            expect($this->writer)->toReceive('warn')->with('CAUTION: Careful')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->caution('Careful');
+        });
+
+        it('writes debug message', function () {
+            expect($this->writer)->toReceive('comment')->with('DEBUG: Variable value')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->debug('Variable value');
+        });
+
+        it('writes fail message', function () {
+            expect($this->writer)->toReceive('error')->with('FAIL: Task failed')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->fail('Task failed');
+        });
+    });
+
+    describe('color methods', function () {
+
+        it('colorizes text', function () {
+            expect($this->writer)->toReceive('colors')->with('<blue>Blue text</end>')->once();
+
+            $this->formatter->colorize('Blue text', 'blue');
+        });
+
+        it('colorizes with eol', function () {
+            expect($this->writer)->toReceive('colors')->with('<green>Green text</end><eol>')->once();
+
+            $this->formatter->colorize('Green text', 'green', true);
+        });
+
+		it('writes colored text', function() {
+			$colors = [
+				'red'    => 'Red alert',
+				'green'  => 'Success',
+				'blue'   => 'Info',
+				'yellow' => 'Warning',
+
+				'cyan', 'gray', 'black', 'white', 'purple', 'magenta', 'indigo',
+			];
+
+			foreach ($colors as $key => $value) {
+				$color = is_string($key) ? $key : $value;
+				$message = ucfirst($value);
+
+				expect($this->writer)->toReceive('colors')->with('<' . $color . '>'. $message .'</end>')->once();
+
+            	$this->formatter->{$color}($message);
+			}
+		});
+
+		 it('writes bold text', function () {
+            expect($this->writer)->toReceive('bold')->with('Bold text')->once();
+            $this->formatter->bold('Bold text');
+        });
+
+		it('write formatted text', function() {
+			$formats = [
+				'italic'    => 'Italic text',
+				'underline' => 'Underlined',
+				'strike'    => 'Struck',
+			];
+
+			foreach ($formats as $format => $message) {
+				expect($this->writer)->toReceive('colors')->with('<' . $format . '>' . $message . '</end>')->once();
+				$this->formatter->{$format}($message);
+			}
+
+			foreach ($formats as $format => $message) {
+				expect($this->writer)->toReceive('colors')->with('<' . $format . '>' . $message . '</end><eol>')->once();
+				$this->formatter->{$format}($message, true);
+			}
+		});
+    });
+
+    describe('lists', function () {
+
+        it('displays bullet list', function () {
+            expect($this->writer)->toReceive('colors')->with('<yellow>Items:</end>')->once();
+            expect($this->writer)->toReceive('write')->with('  • Item 1')->once();
+            expect($this->writer)->toReceive('write')->with('  • Item 2')->once();
+
+            $this->formatter->bulletList(['Item 1', 'Item 2'], 'Items:');
+        });
+
+        it('displays bullet list without title', function () {
+            expect($this->writer)->not->toReceive('colors')->with(Arg::toContain('Title'));
+            expect($this->writer)->toReceive('write')->with('  • Item 1')->once();
+
+            $this->formatter->bulletList(['Item 1']);
+        });
+
+        it('displays numbered list', function () {
+            expect($this->writer)->toReceive('colors')->with('  <green>1.</end> Item 1')->once();
+            expect($this->writer)->toReceive('colors')->with('  <green>2.</end> Item 2')->once();
+
+            $this->formatter->numberedList(['Item 1', 'Item 2'], 'Numbers:');
+        });
+    });
+
+    describe('alerts and borders', function () {
+
+        it('displays alert message', function () {
+            expect($this->writer)->toReceive('colors')->with(Arg::toContain('*'))->times(3);
+
+            $this->formatter->alertMessage('System will restart');
+        });
+    });
+});

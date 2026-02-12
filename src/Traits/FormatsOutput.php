@@ -9,18 +9,13 @@ use Ahc\Cli\Output\Writer;
 /**
  * Provides methods for formatting console output.
  *
+ * @property Writer   $writer
+ *
  * @package BlitzPHP\Console\Traits
  * @mixin \BlitzPHP\Console\Command
  */
 trait FormatsOutput
 {
-    /**
-     * Writer instance.
-     *
-     * @var Writer
-     */
-    protected Writer $writer;
-
     /**
      * Write a message with optional color.
      *
@@ -197,12 +192,12 @@ trait FormatsOutput
      * Write a message with specific color.
      *
      * @param string $message Message to colorize
-     * @param string $color   Color name
+     * @param string $style   Color or style name
 	 * @param bool   $eol     Whether to add end of line
      */
-    public function colorize(string $message, string $color, bool $eol = true): self
+    public function colorize(string $message, string $style, bool $eol = false): self
     {
-        $this->writer->colors('<' . $color . '>' . $message . '</end>' . ($eol ? '<eol>' : ''));
+        $this->writer->colors('<' . $style . '>' . $message . '</end>' . ($eol ? '<eol>' : ''));
 
         return $this;
     }
@@ -211,12 +206,13 @@ trait FormatsOutput
      * Write a message in bold.
      *
      * @param string $message Message to write
+	 * @param bool   $eol     Whether to add end of line
      *
      * @return self
      */
-    public function bold(string $message): self
+    public function bold(string $message, bool $eol = false): self
     {
-        $this->writer->bold($message)->eol();
+        $this->writer->bold($message, $eol);
 
         return $this;
     }
@@ -225,36 +221,33 @@ trait FormatsOutput
      * Write a message in italic.
      *
      * @param string $message Message to write
+	 * @param bool   $eol     Whether to add end of line
      */
-    public function italic(string $message): self
+    public function italic(string $message, bool $eol = false): self
     {
-        $this->writer->colors('<italic>' . $message . '</end><eol>');
-
-        return $this;
+		return $this->colorize($message, 'italic', $eol);
     }
 
     /**
      * Write a message with underline.
      *
      * @param string $message Message to write
+	 * @param bool   $eol     Whether to add end of line
      */
-    public function underline(string $message): self
+    public function underline(string $message, bool $eol = false): self
     {
-        $this->writer->colors('<underline>' . $message . '</end><eol>');
-
-        return $this;
+        return $this->colorize($message, 'underline', $eol);
     }
 
     /**
      * Write a message with strikethrough.
      *
      * @param string $message Message to write
+	 * @param bool   $eol     Whether to add end of line
      */
-    public function strike(string $message): self
+    public function strike(string $message, bool $eol = false): self
     {
-        $this->writer->colors('<strike>' . $message . '</end><eol>');
-
-        return $this;
+        return $this->colorize($message, 'strike', $eol);
     }
 
     /**
@@ -354,6 +347,28 @@ trait FormatsOutput
     public function white(string $message, bool $eol = false): self
     {
         return $this->colorize($message, 'white', $eol);
+    }
+
+	/**
+     * Write a message in purple.
+     *
+     * @param string $message Message to write
+	 * @param bool   $eol     Whether to add end of line
+     */
+    public function purple(string $message, bool $eol = false): self
+    {
+        return $this->colorize($message, 'purple', $eol);
+    }
+
+	/**
+     * Write a message in indigo.
+     *
+     * @param string $message Message to write
+	 * @param bool   $eol     Whether to add end of line
+     */
+    public function indigo(string $message, bool $eol = false): self
+    {
+        return $this->colorize($message, 'indigo', $eol);
     }
 
     /**

@@ -126,8 +126,10 @@ abstract class Command
      *
      * This method must be implemented by classes extending Command
      * to define the behavior of the command when executed.
+	 *
+	 * @return mixed
      */
-    abstract public function handle(): mixed;
+    abstract public function handle();
 
     /**
      * Initialize necessary properties.

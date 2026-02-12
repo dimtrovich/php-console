@@ -284,7 +284,7 @@ trait AdvancedFeatures
 
             foreach ($row as $colIndex => $cell) {
                 $formatted = $formatter($cell);
-                $line .= str_pad($formatted, $colWidths[$colIndex] + 2);
+                $line .= str_pad((string) $formatted, $colWidths[$colIndex] + 2);
             }
 
             $this->write($line)->eol();
@@ -344,7 +344,7 @@ trait AdvancedFeatures
             $this->writer->colors(sprintf("  <green>%s</end> %s", $key, $option['label'] ?? $option))->eol();
         }
 
-        $choice = $this->ask(t('Choose an option') . ' :', $default);
+        $choice = $this->ask(t('Choose an option') . ' :', $default) ?? $default;
 
         return $options[$choice] ?? $choice;
     }

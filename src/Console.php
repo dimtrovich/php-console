@@ -434,6 +434,8 @@ class Console extends Application
      * @param string $commandName The name or FQCN of the default command
      *
      * @throws InvalidArgumentException If the specified command name does not exist
+	 *
+	 * @override
      */
     public function defaultCommand(string $commandName): self
     {
@@ -447,6 +449,16 @@ class Console extends Application
 
         return $this;
     }
+
+	/**
+	 * Define the callable to perform exit
+	 */
+	public function onExit(callable $fn): self
+	{
+		$this->onExit = $fn;
+
+		return $this;
+	}
 
 	/**
 	 * Retrieve a registered command by name or alias.

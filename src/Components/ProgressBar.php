@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Overrides;
+namespace BlitzPHP\Console\Components;
 
 use Ahc\Cli\Output\ProgressBar as AhcProgressBar;
 use Ahc\Cli\Output\Writer;

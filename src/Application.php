@@ -45,6 +45,8 @@ class Application
     {
         $this->app = new Console($name, $version);
 
+		static::defineBuilInStyles();
+
         $this->defineColors('help_header|help_item_even|help_item_odd', ['fg' => Color::GREEN]);
         $this->defineColors('help_group', ['fg' => Color::fg256(49)]);
         $this->defineColors('help_category', ['fg' => Color::YELLOW]);
@@ -423,4 +425,17 @@ class Application
 
         return $this;
     }
+
+	/**
+	 *
+	 */
+	public static function defineBuilInStyles()
+	{
+		Color::style('underline', ['bold' => 4]);
+		Color::style('italic', ['bold' => 3]);
+		Color::style('strike', ['bold' => 9]);
+
+		Color::style('magenta', ['fg' => Color::fg256(201)]);
+		Color::style('indigo', ['fg' => Color::fg256(54)]);
+	}
 }

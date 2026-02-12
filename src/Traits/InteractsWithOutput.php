@@ -9,8 +9,8 @@ use Ahc\Cli\Output\Color;
 use Ahc\Cli\Output\Writer;
 use BlitzPHP\Console\Components\Alert;
 use BlitzPHP\Console\Components\Badge;
+use BlitzPHP\Console\Components\ProgressBar;
 use BlitzPHP\Console\Overrides\Cursor;
-use BlitzPHP\Console\Overrides\ProgressBar;
 
 /**
  * Provides interaction with console output.

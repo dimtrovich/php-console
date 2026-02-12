@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BlitzPHP\Console\Components;
 
 use Ahc\Cli\Output\Writer;
+use Exception;
 
 /**
  * Badge component for console output.
@@ -199,25 +200,25 @@ class Badge
     public function outline(string $message, string $label = 'OUTLINE', string $color = 'blue'): self
     {
         $method = match ($color) {
-            'info'      => 'cyanBold',
-            'success'   => 'greenBold',
-            'warning'   => 'yellowBold',
-            'error'     => 'redBold',
-            'danger'    => 'redBold',
-            'primary'   => 'blueBold',
-            'secondary' => 'grayBold',
-            'dark'      => 'blackBold',
-            'light'     => 'whiteBold',
-            default     => $color . 'Bold',
+            'info'      => 'boldCyan',
+            'success'   => 'boldGreen',
+            'warning'   => 'boldYellow',
+            'error'     => 'boldRed',
+            'danger'    => 'boldRed',
+            'primary'   => 'boldBlue',
+            'secondary' => 'boldGray',
+            'dark'      => 'boldBlack',
+            'light'     => 'boldWhite',
+            default     => 'bold' . ucfirst(strtolower($color)),
         };
 
-        if (method_exists($this->writer, $method)) {
-            $this->writer->{$method}(" {$label} ");
-        } else {
-            $this->writer->bold(" {$label} ");
-        }
+        try {
+			$this->writer->{$method}(" {$label} ");
+		} catch (Exception) {
+			$this->writer->bold(" {$label} ");
+		}
 
-        $this->writer->write(' ' . $message, true);
+        $this->writer->write(' ' . $message)->eol();
 
         return $this;
     }

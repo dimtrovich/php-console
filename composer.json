@@ -38,7 +38,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "BlitzPHP\\Console\\Spec\\": "spec"
+            "Tests\\": "spec/_support"
         }
     },
     "scripts": {
