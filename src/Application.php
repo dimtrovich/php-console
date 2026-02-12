@@ -374,6 +374,28 @@ class Application
         return $this;
     }
 
+	/**
+	 * Set the default command to execute when no command is specified.
+	 *
+	 * This method allows you to define a default command that will be executed
+	 * when the user runs the application without specifying a command.
+	 *
+	 * @param string $command The name of the default command
+	 *
+	 * @return self The current instance
+	 *
+	 * @example
+	 * ```php
+	 * $app->withDefaultCommand('help'); // Show help when no command is specified
+	 * ```
+	 */
+	public function withDefaultCommand(string $command): self
+	{
+		$this->app->defaultCommand($command);
+
+		return $this;
+	}
+
     /**
      * Define custom color styles for the console output.
      *

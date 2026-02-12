@@ -8,6 +8,7 @@ use Ahc\Cli\Application;
 use BlitzPHP\Console\Exceptions\CommandNotFoundException;
 use BlitzPHP\Console\Exceptions\InvalidCommandException;
 use BlitzPHP\Contracts\Container\ContainerInterface;
+use InvalidArgumentException;
 use ReflectionClass;
 use Throwable;
 
@@ -425,6 +426,26 @@ class Console extends Application
         $this->outputHelper()->showCommandsHelp($this->commands(), $header, $footer);
 
         return ($this->onExit)();
+    }
+
+	/**
+     * Set the default command.
+     *
+     * @param string $commandName The name or FQCN of the default command
+     *
+     * @throws InvalidArgumentException If the specified command name does not exist
+     */
+    public function defaultCommand(string $commandName): self
+    {
+		$command = $this->retrieveCommand($commandName);
+
+		if (null === $command) {
+			throw new InvalidArgumentException(t('Command "%s" does not exist', [$commandName]));
+		}
+
+		parent::defaultCommand($commandName);
+
+        return $this;
     }
 
 	/**
