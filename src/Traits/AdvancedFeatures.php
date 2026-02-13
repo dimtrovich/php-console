@@ -210,52 +210,6 @@ trait AdvancedFeatures
     // =========================================================================
 
     /**
-	 * Display ASCII art text.
-	 *
-	 * Renders text as ASCII art using the specified font style.
-	 * Note: Only a basic set of characters is currently supported.
-	 *
-	 * @param string $text Text to display as ASCII art
-	 * @param string $font Font style ('standard' only currently)
-	 *
-	 * @return self
-	 *
-	 * @example
-	 * ```php
-	 * $this->asciiArt('HELLO', 'standard');
-	 * ```
-	 */
-    public function asciiArt(string $text, string $font = 'standard'): self
-    {
-        $fonts = [
-            'standard' => [
-                'A' => '  ██  ',
-                'B' => '████ ',
-                'C' => ' ████',
-                'D' => '████ ',
-                'E' => '█████',
-                // ... define all characters
-            ],
-        ];
-
-        if (isset($fonts[$font])) {
-            $lines = [];
-
-            foreach (str_split(strtoupper($text)) as $char) {
-                if (isset($fonts[$font][$char])) {
-                    $lines[] = $fonts[$font][$char];
-                }
-            }
-
-            foreach ($lines as $line) {
-                $this->write($line, true);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
 	 * Display a timeline of events with status indicators.
 	 *
 	 * Shows a chronological list of events with visual status indicators
