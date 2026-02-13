@@ -65,13 +65,25 @@ trait AdvancedFeatures
     // =========================================================================
 
     /**
-     * Execute a callback with a spinner animation.
-     *
-     * @param callable $callback Callback to execute
-     * @param string   $message  Spinner message
-     *
-     * @return mixed Callback result
-     */
+	 * Execute a callback with a spinner animation.
+	 *
+	 * This method displays an animated spinner while executing a callback.
+	 * If pcntl_fork is available, the callback runs in a child process for true parallelism.
+	 * Otherwise, it runs synchronously with cursor hiding.
+	 *
+	 * @param callable $callback The callback function to execute
+	 * @param string   $message  The message to display next to the spinner
+	 *
+	 * @return mixed The result of the callback execution
+	 *
+	 * @example
+	 * ```php
+	 * $result = $this->withSpinner(function() {
+	 *     sleep(3);
+	 *     return 'Task completed';
+	 * }, 'Processing long task...');
+	 * ```
+	 */
     public function withSpinner(callable $callback, string $message = 'Processing...'): mixed
     {
         $spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
@@ -117,11 +129,31 @@ trait AdvancedFeatures
     }
 
     /**
-     * Execute a task with a progress bar.
-     *
-     * @param iterable|int $items    Items to process or total count
-     * @param callable     $callback Callback for each item
-     */
+	 * Execute a task with a progress bar.
+	 *
+	 * This method creates and manages a progress bar while executing a callback
+	 * either for each item in an iterable or for a fixed number of steps.
+	 *
+	 * @param iterable|int $items    Items to process (iterable) or total steps (int)
+	 * @param callable     $callback Callback that receives (item, progressBar, key) for iterables,
+	 *                               or (progressBar) for integer totals
+	 *
+	 * @return void
+	 *
+	 * @example
+	 * ```php
+	 * // With array
+	 * $this->withProgressBar([1,2,3,4,5], function($item, $bar) {
+	 *     process($item);
+	 * });
+	 *
+	 * // With total count
+	 * $this->withProgressBar(10, function($bar) {
+	 *     doWork();
+	 *     $bar->advance();
+	 * });
+	 * ```
+	 */
     public function withProgressBar(iterable|int $items, callable $callback): void
     {
         $bar = $this->progress(is_iterable($items) ? count($items) : $items);
@@ -140,13 +172,25 @@ trait AdvancedFeatures
     }
 
     /**
-     * Display a live counter.
-     *
-     * @param callable $updater  Callback that returns current value
-     * @param int      $step     Number of steps
-     * @param string   $label    Counter label
-     * @param int      $interval Update interval in microseconds
-     */
+	 * Display a live counter with real-time updates.
+	 *
+	 * Shows a continuously updating counter that refreshes at specified intervals.
+	 * Useful for monitoring progress of long-running processes.
+	 *
+	 * @param callable $updater  Callback that returns the current value (receives step index)
+	 * @param int      $step     Number of steps/updates to perform
+	 * @param string   $label    Label to display before the counter value
+	 * @param int      $interval Update interval in microseconds
+	 *
+	 * @return void
+	 *
+	 * @example
+	 * ```php
+	 * $this->liveCounter(function($i) {
+	 *     return getCurrentProgress();
+	 * }, 20, 'Progress', 500000);
+	 * ```
+	 */
     public function liveCounter(callable $updater, int $step = 10, string $label = 'Counter', int $interval = 1000000): void
     {
         $this->write($this->cursor->hide());
@@ -166,13 +210,21 @@ trait AdvancedFeatures
     // =========================================================================
 
     /**
-     * Display ASCII art text.
-     *
-     * @param string $text Text to display as ASCII art
-     * @param string $font Font style
-     *
-     * @return self
-     */
+	 * Display ASCII art text.
+	 *
+	 * Renders text as ASCII art using the specified font style.
+	 * Note: Only a basic set of characters is currently supported.
+	 *
+	 * @param string $text Text to display as ASCII art
+	 * @param string $font Font style ('standard' only currently)
+	 *
+	 * @return self
+	 *
+	 * @example
+	 * ```php
+	 * $this->asciiArt('HELLO', 'standard');
+	 * ```
+	 */
     public function asciiArt(string $text, string $font = 'standard'): self
     {
         $fonts = [
@@ -204,10 +256,27 @@ trait AdvancedFeatures
     }
 
     /**
-     * Display a timeline of events.
-     *
-     * @param array<array{status?: string, description?: string}> $events Timeline events
-     */
+	 * Display a timeline of events with status indicators.
+	 *
+	 * Shows a chronological list of events with visual status indicators
+	 * (✓ completed, ✗ failed, ↻ processing, ○ pending).
+	 *
+	 * @param array<array{status?: string, description?: string}> $events Timeline events
+	 *        Each event can have:
+	 *        - status: 'completed', 'failed', 'processing', or any other string (default: 'pending')
+	 *        - description: Event description (default: 'Event N')
+	 *
+	 * @return self
+	 *
+	 * @example
+	 * ```php
+	 * $this->timeline([
+	 *     ['status' => 'completed', 'description' => 'Database migrated'],
+	 *     ['status' => 'processing', 'description' => 'Cache cleared'],
+	 *     ['status' => 'pending', 'description' => 'Assets compiled'],
+	 * ]);
+	 * ```
+	 */
     public function timeline(array $events): self
     {
         $this->colorize('Timeline:', 'yellow');
@@ -240,11 +309,23 @@ trait AdvancedFeatures
     }
 
     /**
-     * Display an ASCII heatmap.
-     *
-     * @param array<int|float> $data   Heatmap data
-     * @param array<string>    $colors Color characters
-     */
+	 * Display an ASCII heatmap from numerical data.
+	 *
+	 * Converts an array of numbers into a visual heatmap using density characters.
+	 * Values are normalized between min and max of the dataset.
+	 *
+	 * @param array<int|float> $data   Array of numerical values
+	 * @param array<string>    $colors Array of density characters from low to high
+	 *                                 (default: ['░', '▒', '▓', '█'])
+	 *
+	 * @return self
+	 *
+	 * @example
+	 * ```php
+	 * $this->heatmap([10, 20, 5, 30, 15]);
+	 * // Output: ░▒▓█▒
+	 * ```
+	 */
     public function heatmap(array $data, array $colors = ['░', '▒', '▓', '█']): self
     {
         $max = max($data);
@@ -261,11 +342,28 @@ trait AdvancedFeatures
     }
 
     /**
-     * Display data in a grid format.
-     *
-     * @param array<array<mixed>> $data      Grid data
-     * @param callable|null       $formatter Cell formatter callback
-     */
+	 * Display data in a formatted grid.
+	 *
+	 * Renders a 2D array as an aligned grid with automatic column width calculation.
+	 * Optional formatter callback allows custom cell formatting.
+	 *
+	 * @param array<array<mixed>> $data      Grid data as array of rows
+	 * @param callable|null       $formatter Optional callback to format each cell
+	 *                                       Receives cell value, returns formatted string
+	 *
+	 * @return self
+	 *
+	 * @example
+	 * ```php
+	 * $data = [
+	 *     ['Name', 'Age', 'City'],
+	 *     ['John', 30, 'New York'],
+	 *     ['Jane', 25, 'London']
+	 * ];
+	 *
+	 * $this->grid($data, fn($cell) => strtoupper((string)$cell));
+	 * ```
+	 */
     public function grid(array $data, ?callable $formatter = null): self
     {
         $formatter = $formatter ?? fn ($cell) => $cell;
@@ -294,12 +392,25 @@ trait AdvancedFeatures
     }
 
     /**
-     * Display a chart in ASCII format.
-     *
-     * @param array<string, int|float> $data   Chart data
-     * @param string                   $type   Chart type ('bar' or 'pie')
-     * @param int                      $height Chart height for bar charts
-     */
+	 * Display a chart in ASCII format.
+	 *
+	 * Creates either a bar chart or pie chart visualization from associative data.
+	 *
+	 * @param array<string, int|float> $data   Associative array of labels and values
+	 * @param string                   $type   Chart type: 'bar' or 'pie'
+	 * @param int                      $height Maximum height/width of the chart
+	 *
+	 * @return self
+	 *
+	 * @example
+	 * ```php
+	 * // Bar chart
+	 * $this->chart(['A' => 10, 'B' => 20, 'C' => 5], 'bar');
+	 *
+	 * // Pie chart
+	 * $this->chart(['Linux' => 50, 'Windows' => 30, 'Mac' => 20], 'pie');
+	 * ```
+	 */
     public function chart(array $data, string $type = 'bar', int $height = 10): self
     {
         $max = max($data);
@@ -328,14 +439,27 @@ trait AdvancedFeatures
     // =========================================================================
 
     /**
-     * Display an interactive menu.
-     *
-     * @param string                     $title   Menu title
-     * @param array<string, mixed>       $options Menu options
-     * @param string|null                $default Default option
-     *
-     * @return mixed Selected option
-     */
+	 * Display an interactive menu.
+	 *
+	 * Shows a menu with numbered options and prompts the user to choose.
+	 * Returns the selected option value.
+	 *
+	 * @param string                $title   Menu title
+	 * @param array<string, mixed>  $options Menu options where keys are option identifiers
+	 *                                       and values can be strings or arrays with 'label'
+	 * @param string|null           $default Default option key
+	 *
+	 * @return mixed Selected option value
+	 *
+	 * @example
+	 * ```php
+	 * $choice = $this->menu('Actions', [
+	 *     '1' => ['label' => 'Create user'],
+	 *     '2' => ['label' => 'Delete user'],
+	 *     '3' => 'Exit'
+	 * ], '1');
+	 * ```
+	 */
     public function menu(string $title, array $options, ?string $default = null): mixed
     {
         $this->colorize($title, 'yellow');
@@ -354,12 +478,21 @@ trait AdvancedFeatures
     // =========================================================================
 
     /**
-     * Display an animation.
-     *
-     * @param array<string> $frames     Animation frames
-     * @param int           $iterations Number of iterations
-     * @param int           $delay      Delay between frames in microseconds
-     */
+	 * Display an animation sequence.
+	 *
+	 * Shows a sequence of frames in a loop to create an animation effect.
+	 *
+	 * @param array<string> $frames     Array of animation frames (strings)
+	 * @param int           $iterations Number of times to loop through frames
+	 * @param int           $delay      Delay between frames in microseconds
+	 *
+	 * @return self
+	 *
+	 * @example
+	 * ```php
+	 * $this->animation(['◐', '◓', '◑', '◒'], 5, 100000);
+	 * ```
+	 */
     public function animation(array $frames, int $iterations = 3, int $delay = 100000): self
     {
         $this->write($this->cursor->hide());
@@ -378,10 +511,19 @@ trait AdvancedFeatures
     }
 
     /**
-     * Play a beep sound.
-     *
-     * @param int $count Number of beeps
-     */
+	 * Play a beep sound.
+	 *
+	 * Outputs the ASCII bell character to produce a system beep sound.
+	 *
+	 * @param int $count Number of beeps to play
+	 *
+	 * @return self
+	 *
+	 * @example
+	 * ```php
+	 * $this->beep(3); // Beep three times
+	 * ```
+	 */
     public function beep(int $count = 1): self
     {
         for ($i = 0; $i < $count; $i++) {
@@ -397,11 +539,23 @@ trait AdvancedFeatures
     // =========================================================================
 
     /**
-     * Display a system notification.
-     *
-     * @param string $title   Notification title
-     * @param string $message Notification message
-     */
+	 * Display a system notification.
+	 *
+	 * Sends a desktop notification using platform-specific commands:
+	 * - macOS: osascript
+	 * - Linux: notify-send
+	 * - Windows: PowerShell beep
+	 *
+	 * @param string $title   Notification title
+	 * @param string $message Notification message
+	 *
+	 * @return self
+	 *
+	 * @example
+	 * ```php
+	 * $this->notify('Task Complete', 'The backup has finished successfully');
+	 * ```
+	 */
     public function notify(string $title, string $message): self
     {
         $os = PHP_OS_FAMILY;

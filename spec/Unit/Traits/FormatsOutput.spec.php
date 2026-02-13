@@ -9,7 +9,7 @@ describe('Traits / FormatsOutput', function () {
 	fileHook(
 		file: 'output-format.test',
 		beforeAll: function() {
-			Application::defineBuilInStyles();
+			Application::defineBuiltInStyles();
 			$this->getFormatter = function($writer) {
 				$formatter = new class {
 					use FormatsOutput;

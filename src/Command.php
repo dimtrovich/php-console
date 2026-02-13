@@ -201,12 +201,21 @@ abstract class Command
 	/**
 	 * Magic method to handle dynamic property access.
 	 *
-	 * @param string $name Property name
-	 * @param array  $arguments Method arguments (not used)
+	 * This method allows accessing protected properties like 'name' and 'alias'
+	 * as if they were methods (e.g., $command->name()).
 	 *
-	 * @return mixed Property value if exists, otherwise throws an exception
+	 * @param string $name      The property name being accessed as a method
+	 * @param array  $arguments Method arguments (not used, maintained for signature compatibility)
 	 *
-	 * @throws InvalidArgumentException If the property does not exist
+	 * @return mixed The property value if it exists, empty string if property is null
+	 *
+	 * @throws InvalidArgumentException If the property does not exist on the class
+	 *
+	 * @example
+	 * ```php
+	 * $name = $command->name(); // Returns the command name
+	 * $alias = $command->alias(); // Returns the command alias
+	 * ```
 	 */
     public function __call(string $name, array $arguments = [])
 	{
