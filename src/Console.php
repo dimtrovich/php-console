@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace BlitzPHP\Console;
 
 use Ahc\Cli\Application;
+use BlitzPHP\Console\Components\Logger;
 use BlitzPHP\Console\Exceptions\CommandNotFoundException;
 use BlitzPHP\Console\Exceptions\InvalidCommandException;
 use BlitzPHP\Contracts\Container\ContainerInterface;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use Throwable;
 
@@ -25,6 +27,13 @@ class Console extends Application
      * Container instance.
      */
     protected ?ContainerInterface $container = null;
+
+	/**
+	 * Logger configuration.
+	 *
+	 * @var array{instance: LoggerInterface|null, prefix: string}
+	 */
+	protected array $logger = ['instance' => null, 'prefix' => ''];
 
 	/**
 	 * @var array<string, callable>
@@ -105,6 +114,36 @@ class Console extends Application
 
         return $this;
     }
+
+	/**
+	 * Set the PSR logger instance for the application.
+	 *
+	 * This method configures the PSR-3 logger that will be used by all commands
+	 * through the `$this->log()` method. It also sets up the Logger component
+	 * with the console writer and default prefix.
+	 *
+	 * @param LoggerInterface $logger The PSR-3 logger instance
+	 * @param string          $prefix Optional default prefix for all log messages
+	 *                                (e.g., 'APP' will produce '[APP] Message')
+	 *
+	 * @return self The current instance for method chaining
+	 *
+	 * @example
+	 * ```php
+	 * $console->setLogger($monologLogger, 'APP');
+	 * ```
+	 *
+	 * @see \BlitzPHP\Console\Components\Logger::configure()
+	 */
+	public function setLogger(LoggerInterface $logger, string $prefix = ''): self
+	{
+		$this->logger['instance'] = $logger;
+		$this->logger['prefix'] = $prefix;
+
+		Logger::configure($this->io()->writer(), $logger, $prefix);
+
+		return $this;
+	}
 
 	/**
 	 * Set a hook callback.

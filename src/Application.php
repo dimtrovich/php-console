@@ -5,8 +5,10 @@ namespace BlitzPHP\Console;
 use Ahc\Cli\Output\Color;
 use BlitzPHP\Console\Components\Alert;
 use BlitzPHP\Console\Components\Badge;
+use BlitzPHP\Console\Components\Logger;
 use BlitzPHP\Contracts\Container\ContainerInterface;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 
 use function Ahc\Cli\t;
 
@@ -217,6 +219,11 @@ class Application
 	 *                        - `false`: Hide default icons for all badges
 	 *                        - `null`: Keep current setting (no change)
 	 *
+	 * @param bool|null $logger Whether to show default icons for log:
+	 *                        - `true`: Show default icons for all logs
+	 *                        - `false`: Hide default icons for all logs
+	 *                        - `null`: Keep current setting (no change)
+	 *
 	 * @return self The current instance for method chaining
 	 *
 	 * @example
@@ -237,15 +244,19 @@ class Application
 	 *
 	 * @see \BlitzPHP\Console\Components\Alert::showDefaultIcons()
 	 * @see \BlitzPHP\Console\Components\Badge::showDefaultIcons()
+	 * @see \BlitzPHP\Console\Components\Logger::showDefaultIcons()
 	 * @see \BlitzPHP\Console\Icon Available icon constants
 	 */
-	public function withIcons(?bool $alert = null, ?bool $badge = null): self
+	public function withIcons(?bool $alert = null, ?bool $badge = null, ?bool $logger = null): self
 	{
 		if ($alert !== null) {
 			Alert::showDefaultIcons($alert);
 		}
 		if ($badge !== null) {
 			Badge::showDefaultIcons($badge);
+		}
+		if ($logger !== null) {
+			Logger::showDefaultIcons($logger);
 		}
 
 		return $this;
@@ -478,6 +489,46 @@ class Application
 
         return $this;
     }
+
+	/**
+     * Set the PSR logger for the application.
+     *
+     * This method configures a PSR-3 compatible logger that will be available
+     * in all commands via `$this->log()`. Each log message will be both:
+     * - Displayed in the console with appropriate styling and icons
+     * - Sent to the PSR logger with an optional prefix
+     *
+     * @param LoggerInterface $logger The PSR logger instance
+     * @param string          $prefix Optional prefix to add to all log messages
+     *                                (e.g., 'APP' will produce '[APP] Message')
+     *
+     * @return self The current instance for method chaining
+     *
+     * @example
+     * ```php
+     * use Monolog\Logger;
+     * use Monolog\Handler\StreamHandler;
+     *
+     * $logger = new Logger('console');
+     * $logger->pushHandler(new StreamHandler('logs/console.log'));
+     *
+     * // Tous les logs seront préfixés par [APP]
+     * $app = Application::create('MyApp')
+     *     ->withLogger($logger, 'APP')
+     *     ->withCommands([...])
+     *     ->run();
+     * ```
+     *
+     * @see \Psr\Log\LoggerInterface
+     * @see \BlitzPHP\Console\Components\Logger
+     */
+    public function withLogger(LoggerInterface $logger, string $prefix = ''): self
+    {
+		$this->app->setLogger($logger, $prefix);
+
+        return $this;
+    }
+
 
     /**
      * Add multiple commands to the console application.

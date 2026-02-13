@@ -9,8 +9,12 @@ use Ahc\Cli\Output\Color;
 use Ahc\Cli\Output\Writer;
 use BlitzPHP\Console\Components\Alert;
 use BlitzPHP\Console\Components\Badge;
+use BlitzPHP\Console\Components\Logger;
 use BlitzPHP\Console\Components\ProgressBar;
 use BlitzPHP\Console\Overrides\Cursor;
+use RuntimeException;
+
+use function Ahc\Cli\t;
 
 /**
  * Provides interaction with console output.
@@ -41,6 +45,51 @@ trait InteractsWithOutput
 	public function badge(): Badge
 	{
 		return Badge::instance($this->writer);
+	}
+
+	/**
+	 * Get the Logger component instance.
+	 *
+	 * This method provides access to the logging system, which combines
+	 * console output with PSR-3 logging. Each log message will be:
+	 * - Displayed in the console with appropriate styling and icons
+	 * - Sent to the configured PSR logger with an optional prefix
+	 *
+	 * @param string $prefix Optional prefix for this logger instance.
+	 *                       If different from current prefix, returns a new instance.
+	 *                       Use empty string to get the default logger.
+	 *
+	 * @return Logger The logger instance
+	 *
+	 * @example
+	 * ```php
+	 * // Basic usage with default prefix
+	 * $this->log()->info('User logged in');
+	 *
+	 * // With specific prefix for this block
+	 * $dbLogger = $this->log('DB');
+	 * $dbLogger->debug('Connecting to database');
+	 *
+	 * // Chained prefixes
+	 * $this->log('APP')
+	 *      ->withPrefix('CACHE')
+	 *      ->info('Cache cleared');
+	 * // Console: [APP > CACHE] Cache cleared
+	 * ```
+	 */
+	public function log(string $prefix = ''): Logger
+	{
+		if (!Logger::hasLogger()) {
+			throw new RuntimeException(t('No PSR logger configured. Use $app->withLogger() to set one.'));
+		}
+
+		$logger = Logger::instance($this->writer);
+
+		if ($prefix !== '' && $prefix !== $logger->prefix()) {
+			return $logger->withPrefix($prefix);
+		}
+
+		return $logger;
 	}
 
     /**
