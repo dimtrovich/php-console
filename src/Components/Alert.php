@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BlitzPHP\Console\Components;
 
 use Ahc\Cli\Output\Writer;
+use BlitzPHP\Console\Icon;
 
 /**
  * Alert component for console output.
@@ -18,10 +19,15 @@ class Alert
      */
     private Writer $writer;
 
-	/**
-	 * Singleton instance.
-	 */
-	private static ?self $instance = null;
+    /**
+     * Singleton instance.
+     */
+    private static ?self $instance = null;
+
+    /**
+     * Whether to show default icons.
+     */
+    private static bool $showDefaultIcons = false;
 
     /**
      * Create a new alert instance.
@@ -33,29 +39,60 @@ class Alert
         $this->writer = $writer;
     }
 
-	/**
-	 * Get the singleton instance of Alert.
-	 */
-	public static function instance(Writer $writer): static
-	{
-		if (self::$instance === null) {
-			self::$instance = new static($writer);
-		}
+    /**
+     * Get the singleton instance of Alert.
+     */
+    public static function instance(Writer $writer): static
+    {
+        if (self::$instance === null) {
+            self::$instance = new static($writer);
+        }
 
-		return self::$instance;
-	}
+        return self::$instance;
+    }
+
+    /**
+     * Enable or disable default icons globally.
+     *
+     * @param bool $enabled Whether to show default icons
+     *
+     * @return void
+     *
+     * @example
+     * ```php
+     * Alert::showDefaultIcons(false); // Disable all default icons
+     * Alert::showDefaultIcons(true);  // Re-enable default icons
+     * ```
+     */
+    public static function showDefaultIcons(bool $enabled): void
+    {
+        self::$showDefaultIcons = $enabled;
+    }
+
+    /**
+     * Check if default icons are enabled.
+     *
+     * @return bool
+     */
+    public static function defaultIconsEnabled(): bool
+    {
+        return self::$showDefaultIcons;
+    }
 
     /**
      * Display an info alert.
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function info(string $message, ?string $title = null): self
+    public function info(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->render($message, 'info', 'INFO', $title);
+        $resolvedIcon = $this->resolveIcon($icon, Icon::INFO);
+        return $this->render($message, 'info', $title ?? 'INFO', $resolvedIcon);
     }
 
     /**
@@ -63,12 +100,15 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function success(string $message, ?string $title = null): self
+    public function success(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->render($message, 'success', 'SUCCESS', $title);
+        $resolvedIcon = $this->resolveIcon($icon, Icon::SUCCESS);
+        return $this->render($message, 'success', $title ?? 'SUCCESS', $resolvedIcon);
     }
 
     /**
@@ -76,12 +116,15 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function warning(string $message, ?string $title = null): self
+    public function warning(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->render($message, 'warning', 'WARNING', $title);
+        $resolvedIcon = $this->resolveIcon($icon, Icon::WARNING);
+        return $this->render($message, 'warning', $title ?? 'WARNING', $resolvedIcon);
     }
 
     /**
@@ -89,12 +132,15 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function error(string $message, ?string $title = null): self
+    public function error(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->render($message, 'error', 'ERROR', $title);
+        $resolvedIcon = $this->resolveIcon($icon, Icon::ERROR);
+        return $this->render($message, 'error', $title ?? 'ERROR', $resolvedIcon);
     }
 
     /**
@@ -102,12 +148,14 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function danger(string $message, ?string $title = null): self
+    public function danger(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->error($message, $title);
+        return $this->error($message, $title, $icon ?? Icon::DANGER);
     }
 
     /**
@@ -115,12 +163,15 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function primary(string $message, ?string $title = null): self
+    public function primary(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->render($message, 'primary', 'ALERT', $title);
+        $resolvedIcon = $this->resolveIcon($icon, Icon::PRIMARY);
+        return $this->render($message, 'primary', $title ?? 'ALERT', $resolvedIcon);
     }
 
     /**
@@ -128,12 +179,15 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function secondary(string $message, ?string $title = null): self
+    public function secondary(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->render($message, 'secondary', 'NOTE', $title);
+        $resolvedIcon = $this->resolveIcon($icon, Icon::SECONDARY);
+        return $this->render($message, 'secondary', $title ?? 'NOTE', $resolvedIcon);
     }
 
     /**
@@ -141,12 +195,15 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function dark(string $message, ?string $title = null): self
+    public function dark(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->render($message, 'dark', 'ALERT', $title);
+        $resolvedIcon = $this->resolveIcon($icon, Icon::DARK);
+        return $this->render($message, 'dark', $title ?? 'ALERT', $resolvedIcon);
     }
 
     /**
@@ -154,12 +211,61 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string|null $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
      *
      * @return self
      */
-    public function light(string $message, ?string $title = null): self
+    public function light(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->render($message, 'light', 'NOTE', $title);
+        $resolvedIcon = $this->resolveIcon($icon, Icon::LIGHT);
+        return $this->render($message, 'light', $title ?? 'NOTE', $resolvedIcon);
+    }
+
+    /**
+     * Display a custom alert.
+     *
+     * @param string      $message Alert message
+     * @param string      $type    Alert type for color scheme
+     * @param string      $title   Alert title
+     * @param string|null $icon    Optional icon to display before the title
+     *                             (null = use default if enabled, false = no icon)
+     *
+     * @return self
+     */
+    public function custom(string $message, string $type, string $title, string|null|false $icon = null): self
+    {
+        $resolvedIcon = $this->resolveIcon($icon, null);
+        return $this->render($message, $type, $title, $resolvedIcon);
+    }
+
+    /**
+     * Resolve the icon based on input and global settings.
+     *
+     * @param string|null|false $icon     Icon parameter from method call
+     * @param string|null       $default  Default icon for this alert type
+     *
+     * @return string|null The resolved icon (null = no icon)
+     */
+    private function resolveIcon(string|null|false $icon, ?string $default): ?string
+    {
+        // Explicitly false means no icon, regardless of global setting
+        if ($icon === false) {
+            return null;
+        }
+
+        // Explicitly provided icon
+        if (is_string($icon)) {
+            return $icon;
+        }
+
+        // Null means use default if globally enabled
+        if ($icon === null && self::$showDefaultIcons) {
+            return $default;
+        }
+
+        // No icon
+        return null;
     }
 
     /**
@@ -167,28 +273,26 @@ class Alert
      *
      * @param string      $message Alert message
      * @param string      $type    Alert type
-     * @param string      $defaultTitle Default title
-     * @param string|null $title   Custom title
+     * @param string      $title   Alert title
+     * @param string|null $icon    Resolved icon (null = no icon)
      *
      * @return self
      */
-    private function render(string $message, string $type, string $defaultTitle, ?string $title = null): self
+    private function render(string $message, string $type, string $title, ?string $icon): self
     {
-        $title = $title ?? $defaultTitle;
-
         $this->writer->eol();
 
         // Top border
-        $this->renderBorder($message, $type);
+        $this->renderBorder($message, $type, $title, $icon);
 
-        // Title line
-        $this->renderTitle($title, $type);
+        // Title line with icon
+        $this->renderTitle($title, $type, $icon);
 
         // Message line
         $this->renderMessage($message, $type);
 
         // Bottom border
-        $this->renderBorder($message, $type);
+        $this->renderBorder($message, $type, $title, $icon);
 
         $this->writer->eol();
 
@@ -198,27 +302,35 @@ class Alert
     /**
      * Render alert border.
      *
-     * @param string $message Message for length calculation
-     * @param string $type    Alert type
+     * @param string      $message Message for length calculation
+     * @param string      $type    Alert type
+     * @param string      $title   Alert title
+     * @param string|null $icon    Optional icon
      */
-    private function renderBorder(string $message, string $type): void
+    private function renderBorder(string $message, string $type, string $title, ?string $icon): void
     {
-        $length = max(strlen($message), \strlen($type) + 2) + 12;
+        $iconLength = $icon ? 2 : 0; // Icon + space
+        $titleLength = strlen($title) + $iconLength;
+        $length = max(strlen($message), $titleLength + 2) + 12;
         $border = str_repeat('*', $length);
 
         $this->writer->colors('<' . $this->getBorderColor($type) . '>' . $border . '</end>')->eol();
     }
 
     /**
-     * Render alert title.
+     * Render alert title with optional icon.
      *
-     * @param string $title Alert title
-     * @param string $type  Alert type
+     * @param string      $title Alert title
+     * @param string      $type  Alert type
+     * @param string|null $icon  Optional icon
      */
-    private function renderTitle(string $title, string $type): void
+    private function renderTitle(string $title, string $type, ?string $icon): void
     {
+        $iconPart = $icon ? $icon . ' ' : '';
+        $displayTitle = $iconPart . $title;
+
         $padding = 6;
-        $formattedTitle = str_pad('*  ' . $title . '  *', $padding * 2 + \strlen($title) + 4, ' ', STR_PAD_BOTH);
+        $formattedTitle = str_pad('*  ' . $displayTitle . '  *', $padding * 2 + strlen($displayTitle) + 4, ' ', STR_PAD_BOTH);
 
         $this->writer->colors('<' . $this->getTitleColor($type) . '>' . $formattedTitle . '</end>')->eol();
     }
@@ -234,7 +346,7 @@ class Alert
         $lines = explode("\n", wordwrap($message, 60, "\n", true));
 
         foreach ($lines as $line) {
-            $paddedLine = str_pad('*  ' . $line . '  *', \strlen($line) + 10, ' ', STR_PAD_RIGHT);
+            $paddedLine = str_pad('*  ' . $line . '  *', strlen($line) + 10, ' ', STR_PAD_RIGHT);
             $this->writer->colors('<' . $this->getMessageColor($type) . '>' . $paddedLine . '</end>')->eol();
         }
     }

@@ -3,6 +3,8 @@
 namespace BlitzPHP\Console;
 
 use Ahc\Cli\Output\Color;
+use BlitzPHP\Console\Components\Alert;
+use BlitzPHP\Console\Components\Badge;
 use BlitzPHP\Console\Exceptions\InvalidCommandException;
 use BlitzPHP\Contracts\Container\ContainerInterface;
 
@@ -181,6 +183,60 @@ class Application
 
         return $this;
     }
+
+	/**
+	 * Configure default icons behavior for alert and badge components.
+	 *
+	 * This method allows you to globally enable or disable default icons
+	 * for alerts and badges. When enabled, each alert/badge type will
+	 * display its associated default icon (e.g., ℹ for info, ✓ for success).
+	 *
+	 * Individual calls can override this global setting by explicitly
+	 * passing an icon or using `false` to disable icons for that specific call.
+	 *
+	 * @param bool|null $alert Whether to show default icons for alerts:
+	 *                         - `true`: Show default icons for all alerts
+	 *                         - `false`: Hide default icons for all alerts
+	 *                         - `null`: Keep current setting (no change)
+	 *
+	 * @param bool|null $badge Whether to show default icons for badges:
+	 *                        - `true`: Show default icons for all badges
+	 *                        - `false`: Hide default icons for all badges
+	 *                        - `null`: Keep current setting (no change)
+	 *
+	 * @return self The current instance for method chaining
+	 *
+	 * @example
+	 * ```php
+	 * // Disable default icons for both alerts and badges
+	 * $app->withIcons(false, false);
+	 *
+	 * // Enable only for alerts, keep badges as is
+	 * $app->withIcons(true, null);
+	 *
+	 * // Disable alerts, enable badges
+	 * $app->withIcons(false, true);
+	 *
+	 * // Later, individual calls can still specify icons
+	 * $alert->success('Done', 'SUCCESS', Icon::STAR); // Force star icon
+	 * $badge->info('Message', 'INFO', false);        // No icon for this badge
+	 * ```
+	 *
+	 * @see \BlitzPHP\Console\Components\Alert::showDefaultIcons()
+	 * @see \BlitzPHP\Console\Components\Badge::showDefaultIcons()
+	 * @see \BlitzPHP\Console\Icon Available icon constants
+	 */
+	public function withIcons(?bool $alert = null, ?bool $badge = null): self
+	{
+		if ($alert !== null) {
+			Alert::showDefaultIcons($alert);
+		}
+		if ($badge !== null) {
+			Badge::showDefaultIcons($badge);
+		}
+
+		return $this;
+	}
 
     /**
      * Set a header title for the help screen.
