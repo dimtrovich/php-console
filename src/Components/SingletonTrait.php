@@ -1,18 +1,26 @@
 <?php
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Components;
 
 trait SingletonTrait
 {
-
     /**
      * Singleton instance.
-	 *
-	 * @var static|null
+     *
+     * @var static|null
      */
-    private static $instance = null;
+    private static $instance;
 
-	/**
+    /**
      * Get the singleton instance.
      */
     public static function instance(): static
@@ -25,7 +33,7 @@ trait SingletonTrait
     }
 
     public static function resetInstance()
-	{
-		static::$instance = null;
-	}
+    {
+        static::$instance = null;
+    }
 }

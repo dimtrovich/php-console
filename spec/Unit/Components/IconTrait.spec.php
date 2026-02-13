@@ -1,16 +1,24 @@
 <?php
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Dimtrovich\Console\Components\IconTrait;
 use Dimtrovich\Console\Icon;
 
-
 describe('Components / IconTrait', function () {
-
     beforeEach(function () {
-        $this->traitClass = new class {
+        $this->traitClass = new class () {
             use IconTrait;
 
-            public static function reset() {
+            public static function reset()
+            {
                 self::$showDefaultIcons = false;
             }
         };
@@ -19,7 +27,6 @@ describe('Components / IconTrait', function () {
     });
 
     describe('global icon settings', function () {
-
         it('disables default icons by default', function () {
             expect($this->traitClass::defaultIconsEnabled())->toBe(false);
         });
@@ -39,12 +46,12 @@ describe('Components / IconTrait', function () {
     });
 
     describe('icon resolution', function () {
-
         beforeEach(function () {
-            $this->resolver = new class {
+            $this->resolver = new class () {
                 use IconTrait;
 
-                public function resolve($icon, $default) {
+                public function resolve($icon, $default)
+                {
                     return $this->resolveIcon($icon, $default);
                 }
             };
@@ -63,7 +70,6 @@ describe('Components / IconTrait', function () {
         });
 
         context('with default icons disabled', function () {
-
             beforeEach(function () {
                 $this->resolver::showDefaultIcons(false);
             });
@@ -76,7 +82,6 @@ describe('Components / IconTrait', function () {
         });
 
         context('with default icons enabled', function () {
-
             beforeEach(function () {
                 $this->resolver::showDefaultIcons(true);
             });
@@ -96,7 +101,6 @@ describe('Components / IconTrait', function () {
     });
 
     describe('integration with components', function () {
-
         it('affects Alert component globally', function () {
             // À tester dans les tests Alert avec la configuration
         });

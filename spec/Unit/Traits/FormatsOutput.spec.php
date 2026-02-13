@@ -1,49 +1,59 @@
 <?php
 
-use Dimtrovich\Console\Traits\FormatsOutput;
-use Ahc\Cli\Output\Writer;
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Ahc\Cli\Output\Color;
+use Ahc\Cli\Output\Writer;
+use Dimtrovich\Console\Traits\FormatsOutput;
 use Kahlan\Arg;
 
 describe('Traits / FormatsOutput', function () {
-	fileHook(
-		file: 'output-format.test',
-		beforeAll: function() {
-			Color::style('underline', ['bold' => 4]);
-			Color::style('italic', ['bold' => 3]);
-			Color::style('strike', ['bold' => 9]);
+    fileHook(
+        file: 'output-format.test',
+        beforeAll: function () {
+            Color::style('underline', ['bold' => 4]);
+            Color::style('italic', ['bold' => 3]);
+            Color::style('strike', ['bold' => 9]);
 
-			Color::style('magenta', ['fg' => Color::fg256(201)]);
-			Color::style('indigo', ['fg' => Color::fg256(54)]);
+            Color::style('magenta', ['fg' => Color::fg256(201)]);
+            Color::style('indigo', ['fg' => Color::fg256(54)]);
 
+            $this->getFormatter = function ($writer) {
+                $formatter = new class () {
+                    use FormatsOutput;
 
-			$this->getFormatter = function($writer) {
-				$formatter = new class {
-					use FormatsOutput;
-					protected Writer $writer;
+                    protected Writer $writer;
 
-					public function setWriter($w) {
-						$this->writer = $w;
+                    public function setWriter($w)
+                    {
+                        $this->writer = $w;
 
-						return $this;
-					}
+                        return $this;
+                    }
 
-					public function getWriter() {
-						return $this->writer;
-					}
-				};
+                    public function getWriter()
+                    {
+                        return $this->writer;
+                    }
+                };
 
-				return $formatter->setWriter($writer);
-			};
-		},
-		beforeEach: function($files) {
-			$this->writer = new Writer($files[0]);
-			$this->formatter = $this->getFormatter($this->writer);
-		},
-	);
+                return $formatter->setWriter($writer);
+            };
+        },
+        beforeEach: function ($files) {
+            $this->writer    = new Writer($files[0]);
+            $this->formatter = $this->getFormatter($this->writer);
+        },
+    );
 
     describe('basic output', function () {
-
         it('writes a line with color', function () {
             expect($this->writer)->toReceive('colors')->with('<red>Error message</end>')->once();
 
@@ -60,7 +70,6 @@ describe('Traits / FormatsOutput', function () {
     });
 
     describe('colored messages', function () {
-
         it('writes info message', function () {
             expect($this->writer)->toReceive('info')->with('Information')->once();
             expect($this->writer)->toReceive('eol')->once();
@@ -148,7 +157,6 @@ describe('Traits / FormatsOutput', function () {
     });
 
     describe('color methods', function () {
-
         it('colorizes text', function () {
             expect($this->writer)->toReceive('colors')->with('<blue>Blue text</end>')->once();
 
@@ -161,52 +169,51 @@ describe('Traits / FormatsOutput', function () {
             $this->formatter->colorize('Green text', 'green', true);
         });
 
-		it('writes colored text', function() {
-			$colors = [
-				'red'    => 'Red alert',
-				'green'  => 'Success',
-				'blue'   => 'Info',
-				'yellow' => 'Warning',
+        it('writes colored text', function () {
+            $colors = [
+                'red'    => 'Red alert',
+                'green'  => 'Success',
+                'blue'   => 'Info',
+                'yellow' => 'Warning',
 
-				'cyan', 'gray', 'black', 'white', 'purple', 'magenta', 'indigo',
-			];
+                'cyan', 'gray', 'black', 'white', 'purple', 'magenta', 'indigo',
+            ];
 
-			foreach ($colors as $key => $value) {
-				$color = is_string($key) ? $key : $value;
-				$message = ucfirst($value);
+            foreach ($colors as $key => $value) {
+                $color   = is_string($key) ? $key : $value;
+                $message = ucfirst($value);
 
-				expect($this->writer)->toReceive('colors')->with('<' . $color . '>'. $message .'</end>')->once();
+                expect($this->writer)->toReceive('colors')->with('<' . $color . '>' . $message . '</end>')->once();
 
-            	$this->formatter->{$color}($message);
-			}
-		});
+                $this->formatter->{$color}($message);
+            }
+        });
 
-		 it('writes bold text', function () {
+        it('writes bold text', function () {
             expect($this->writer)->toReceive('bold')->with('Bold text')->once();
             $this->formatter->bold('Bold text');
         });
 
-		it('write formatted text', function() {
-			$formats = [
-				'italic'    => 'Italic text',
-				'underline' => 'Underlined',
-				'strike'    => 'Struck',
-			];
+        it('write formatted text', function () {
+            $formats = [
+                'italic'    => 'Italic text',
+                'underline' => 'Underlined',
+                'strike'    => 'Struck',
+            ];
 
-			foreach ($formats as $format => $message) {
-				expect($this->writer)->toReceive('colors')->with('<' . $format . '>' . $message . '</end>')->once();
-				$this->formatter->{$format}($message);
-			}
+            foreach ($formats as $format => $message) {
+                expect($this->writer)->toReceive('colors')->with('<' . $format . '>' . $message . '</end>')->once();
+                $this->formatter->{$format}($message);
+            }
 
-			foreach ($formats as $format => $message) {
-				expect($this->writer)->toReceive('colors')->with('<' . $format . '>' . $message . '</end><eol>')->once();
-				$this->formatter->{$format}($message, true);
-			}
-		});
+            foreach ($formats as $format => $message) {
+                expect($this->writer)->toReceive('colors')->with('<' . $format . '>' . $message . '</end><eol>')->once();
+                $this->formatter->{$format}($message, true);
+            }
+        });
     });
 
     describe('lists', function () {
-
         it('displays bullet list', function () {
             expect($this->writer)->toReceive('colors')->with('<yellow>Items:</end>')->once();
             expect($this->writer)->toReceive('write')->with('  • Item 1')->once();
@@ -231,7 +238,6 @@ describe('Traits / FormatsOutput', function () {
     });
 
     describe('alerts and borders', function () {
-
         it('displays alert message', function () {
             expect($this->writer)->toReceive('colors')->with(Arg::toContain('*'))->times(3);
 
@@ -239,8 +245,7 @@ describe('Traits / FormatsOutput', function () {
         });
     });
 
-	describe('color methods with eol', function () {
-
+    describe('color methods with eol', function () {
         it('writes red with eol', function () {
             expect($this->writer)->toReceive('colors')->with('<red>Red text</end><eol>')->once();
 
@@ -261,7 +266,6 @@ describe('Traits / FormatsOutput', function () {
     });
 
     describe('write and eol methods', function () {
-
         it('writes text without eol', function () {
             expect($this->writer)->toReceive('write')->with('Text', false)->once();
 
@@ -288,7 +292,6 @@ describe('Traits / FormatsOutput', function () {
     });
 
     describe('list edge cases', function () {
-
         it('handles empty bullet list', function () {
             expect($this->writer)->not->toReceive('write')->with(Arg::toContain('•'));
 
@@ -315,7 +318,6 @@ describe('Traits / FormatsOutput', function () {
     });
 
     describe('alert message edge cases', function () {
-
         it('handles empty message', function () {
             expect($this->writer)->toReceive('colors')->times(3);
 

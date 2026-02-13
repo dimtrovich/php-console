@@ -1,24 +1,32 @@
 <?php
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Dimtrovich\Console\Traits\InteractsWithParameters;
 
 describe('InteractsWithParameters', function () {
-
     beforeEach(function () {
-        $this->params = new class {
+        $this->params = new class () {
             use InteractsWithParameters;
 
-            public function exposeSetParameters(array $arguments, array $options) {
+            public function exposeSetParameters(array $arguments, array $options)
+            {
                 $this->setParameters($arguments, $options);
             }
         };
     });
 
     describe('setParameters', function () {
-
         it('stores arguments and options', function () {
             $arguments = ['name' => 'John', 'age' => 30];
-            $options = ['verbose' => true, 'force' => false];
+            $options   = ['verbose' => true, 'force' => false];
 
             $this->params->exposeSetParameters($arguments, $options);
 
@@ -28,7 +36,6 @@ describe('InteractsWithParameters', function () {
     });
 
     describe('argument methods', function () {
-
         beforeEach(function () {
             $this->params->exposeSetParameters(
                 ['id' => 123, 'name' => 'Product'],
@@ -59,7 +66,6 @@ describe('InteractsWithParameters', function () {
     });
 
     describe('option methods', function () {
-
         beforeEach(function () {
             $this->params->exposeSetParameters(
                 ['id' => 123],
@@ -92,7 +98,6 @@ describe('InteractsWithParameters', function () {
     });
 
     describe('parameter method', function () {
-
         beforeEach(function () {
             $this->params->exposeSetParameters(
                 ['action' => 'create'],
@@ -106,8 +111,8 @@ describe('InteractsWithParameters', function () {
         });
 
         it('prefers arguments over options when names conflict', function () {
-			$params = (clone $this->params);
-			$params->exposeSetParameters(
+            $params = (clone $this->params);
+            $params->exposeSetParameters(
                 ['id' => 999],
                 ['id' => 123],
             );

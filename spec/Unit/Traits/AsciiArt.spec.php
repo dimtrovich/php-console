@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Dimtrovich\Console\Traits\AsciiArt;
 
 use function Kahlan\expect;
@@ -7,29 +16,38 @@ use function Kahlan\expect;
 describe('Traits / AsciiArt', function () {
     fileHook(
         file: 'output-asciiart.test',
-        beforeAll: function() {
-            $this->getArt = function($writer) {
-                $art = new class {
+        beforeAll: function () {
+            $this->getArt = function ($writer) {
+                $art = new class () {
                     use AsciiArt;
+
                     protected $writer;
 
-                    public function setWriter($w) {
+                    public function setWriter($w)
+                    {
                         $this->writer = $w;
+
                         return $this;
                     }
 
-                    public function write(string $text, bool $eol = false) {
+                    public function write(string $text, bool $eol = false)
+                    {
                         $this->writer->write($text, $eol);
+
                         return $this;
                     }
 
-                    public function colorize(string $message, string $style, bool $eol = false) {
+                    public function colorize(string $message, string $style, bool $eol = false)
+                    {
                         $this->writer->colors('<' . $style . '>' . $message . '</end>' . ($eol ? '<eol>' : ''));
+
                         return $this;
                     }
 
-                    public function newLine() {
+                    public function newLine()
+                    {
                         $this->writer->eol();
+
                         return $this;
                     }
                 };
@@ -37,14 +55,13 @@ describe('Traits / AsciiArt', function () {
                 return $art->setWriter($writer);
             };
         },
-        beforeEach: function($files) {
+        beforeEach: function ($files) {
             $this->writer = new Ahc\Cli\Output\Writer($files[0]);
-            $this->art = $this->getArt($this->writer);
+            $this->art    = $this->getArt($this->writer);
         }
     );
 
     describe('font management', function () {
-
         it('has default fonts available', function () {
             $fonts = $this->art->getAvailableFonts();
 
@@ -91,7 +108,7 @@ describe('Traits / AsciiArt', function () {
 
             $this->art->asciiArt('A', 'custom');
 
-			$this->art->unregisterFont('custom');
+            $this->art->unregisterFont('custom');
         });
 
         it('loads fonts from directory', function () {
@@ -106,7 +123,7 @@ describe('Traits / AsciiArt', function () {
             expect($count)->toBe(1);
             expect($this->art->hasFont('testfont'))->toBe(true);
 
-			$this->art->unregisterFont('testfont');
+            $this->art->unregisterFont('testfont');
 
             // clean
             unlink($tempDir . '/testfont.php');
@@ -121,7 +138,6 @@ describe('Traits / AsciiArt', function () {
     });
 
     describe('ascii art rendering', function () {
-
         it('renders text with standard font', function () {
             expect($this->writer)->toReceive('write')->with('  ██  ', true)->once();
 
@@ -147,7 +163,7 @@ describe('Traits / AsciiArt', function () {
 
             $this->art->asciiArt('@', 'test');
 
-			$this->art->unregisterFont('test');
+            $this->art->unregisterFont('test');
         });
 
         it('throws exception for invalid font in asciiArt', function () {
@@ -160,7 +176,6 @@ describe('Traits / AsciiArt', function () {
     });
 
     describe('preview and banner', function () {
-
         it('previews font', function () {
             expect($this->writer)->toReceive('colors')->with('<yellow>Preview of font \'standard\':</end>')->once();
             expect($this->writer)->toReceive('write')->times(27); // A-Z + PHP_EOL

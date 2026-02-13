@@ -1,12 +1,21 @@
 <?php
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console;
 
 use Ahc\Cli\Output\Color;
+use BlitzPHP\Contracts\Container\ContainerInterface;
 use Dimtrovich\Console\Components\Alert;
 use Dimtrovich\Console\Components\Badge;
 use Dimtrovich\Console\Components\Logger;
-use BlitzPHP\Contracts\Container\ContainerInterface;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
@@ -17,8 +26,6 @@ use function Ahc\Cli\t;
  *
  * This class provides a fluent interface for configuring and running
  * a console application based on the adhocore/cli library.
- *
- * @package Dimtrovich\Console
  *
  * @example
  * ```php
@@ -35,11 +42,6 @@ use function Ahc\Cli\t;
 class Application
 {
     /**
-     * The underlying console application instance.
-     */
-    private Console $app;
-
-	/**
      * Available built-in themes with descriptions.
      *
      * @var array<string, string>
@@ -56,6 +58,11 @@ class Application
     ];
 
     /**
+     * The underlying console application instance.
+     */
+    private Console $app;
+
+    /**
      * Create a new application builder instance.
      *
      * This constructor is protected to enforce the use of the static factory method.
@@ -67,7 +74,7 @@ class Application
     {
         $this->app = new Console($name, $version);
 
-		$this->withTheme('default');
+        $this->withTheme('default');
     }
 
     /**
@@ -112,9 +119,9 @@ class Application
             $this->withDebug();
         }
 
-        Color::$enabled = !in_array('--no-colors', $argv, true);
+        Color::$enabled = ! in_array('--no-colors', $argv, true);
 
-        $argv = array_filter($argv, fn($arg) => !in_array($arg, ['--debug', '--no-colors'], true));
+        $argv = array_filter($argv, fn ($arg) => ! in_array($arg, ['--debug', '--no-colors'], true));
 
         return $this->app->handle($argv);
     }
@@ -199,70 +206,68 @@ class Application
         return $this;
     }
 
-	/**
-	 * Configure default icons behavior for alert and badge components.
-	 *
-	 * This method allows you to globally enable or disable default icons
-	 * for alerts and badges. When enabled, each alert/badge type will
-	 * display its associated default icon (e.g., ℹ for info, ✓ for success).
-	 *
-	 * Individual calls can override this global setting by explicitly
-	 * passing an icon or using `false` to disable icons for that specific call.
-	 *
-	 * @param bool|null $alert Whether to show default icons for alerts:
-	 *                         - `true`: Show default icons for all alerts
-	 *                         - `false`: Hide default icons for all alerts
-	 *                         - `null`: Keep current setting (no change)
-	 *
-	 * @param bool|null $badge Whether to show default icons for badges:
-	 *                        - `true`: Show default icons for all badges
-	 *                        - `false`: Hide default icons for all badges
-	 *                        - `null`: Keep current setting (no change)
-	 *
-	 * @param bool|null $logger Whether to show default icons for log:
-	 *                        - `true`: Show default icons for all logs
-	 *                        - `false`: Hide default icons for all logs
-	 *                        - `null`: Keep current setting (no change)
-	 *
-	 * @return self The current instance for method chaining
-	 *
-	 * @example
-	 * ```php
-	 * // Disable default icons for both alerts and badges
-	 * $app->withIcons(false, false);
-	 *
-	 * // Enable only for alerts, keep badges as is
-	 * $app->withIcons(true, null);
-	 *
-	 * // Disable alerts, enable badges
-	 * $app->withIcons(false, true);
-	 *
-	 * // Later, individual calls can still specify icons
-	 * $alert->success('Done', 'SUCCESS', Icon::STAR); // Force star icon
-	 * $badge->info('Message', 'INFO', false);        // No icon for this badge
-	 * ```
-	 *
-	 * @see \Dimtrovich\Console\Components\Alert::showDefaultIcons()
-	 * @see \Dimtrovich\Console\Components\Badge::showDefaultIcons()
-	 * @see \Dimtrovich\Console\Components\Logger::showDefaultIcons()
-	 * @see \Dimtrovich\Console\Icon Available icon constants
-	 */
-	public function withIcons(?bool $alert = null, ?bool $badge = null, ?bool $logger = null): self
-	{
-		if ($alert !== null) {
-			Alert::showDefaultIcons($alert);
-		}
-		if ($badge !== null) {
-			Badge::showDefaultIcons($badge);
-		}
-		if ($logger !== null) {
-			Logger::showDefaultIcons($logger);
-		}
+    /**
+     * Configure default icons behavior for alert and badge components.
+     *
+     * This method allows you to globally enable or disable default icons
+     * for alerts and badges. When enabled, each alert/badge type will
+     * display its associated default icon (e.g., ℹ for info, ✓ for success).
+     *
+     * Individual calls can override this global setting by explicitly
+     * passing an icon or using `false` to disable icons for that specific call.
+     *
+     * @param bool|null $alert  Whether to show default icons for alerts:
+     *                          - `true`: Show default icons for all alerts
+     *                          - `false`: Hide default icons for all alerts
+     *                          - `null`: Keep current setting (no change)
+     * @param bool|null $badge  Whether to show default icons for badges:
+     *                          - `true`: Show default icons for all badges
+     *                          - `false`: Hide default icons for all badges
+     *                          - `null`: Keep current setting (no change)
+     * @param bool|null $logger Whether to show default icons for log:
+     *                          - `true`: Show default icons for all logs
+     *                          - `false`: Hide default icons for all logs
+     *                          - `null`: Keep current setting (no change)
+     *
+     * @return self The current instance for method chaining
+     *
+     * @example
+     * ```php
+     * // Disable default icons for both alerts and badges
+     * $app->withIcons(false, false);
+     *
+     * // Enable only for alerts, keep badges as is
+     * $app->withIcons(true, null);
+     *
+     * // Disable alerts, enable badges
+     * $app->withIcons(false, true);
+     *
+     * // Later, individual calls can still specify icons
+     * $alert->success('Done', 'SUCCESS', Icon::STAR); // Force star icon
+     * $badge->info('Message', 'INFO', false);        // No icon for this badge
+     * ```
+     *
+     * @see \Dimtrovich\Console\Components\Alert::showDefaultIcons()
+     * @see \Dimtrovich\Console\Components\Badge::showDefaultIcons()
+     * @see \Dimtrovich\Console\Components\Logger::showDefaultIcons()
+     * @see \Dimtrovich\Console\Icon Available icon constants
+     */
+    public function withIcons(?bool $alert = null, ?bool $badge = null, ?bool $logger = null): self
+    {
+        if ($alert !== null) {
+            Alert::showDefaultIcons($alert);
+        }
+        if ($badge !== null) {
+            Badge::showDefaultIcons($badge);
+        }
+        if ($logger !== null) {
+            Logger::showDefaultIcons($logger);
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
+    /**
      * Load a built-in or custom theme.
      *
      * This method loads a theme file from the themes directory and applies
@@ -284,13 +289,14 @@ class Application
      */
     public function withTheme(string $theme): self
     {
-		if (! file_exists($path = __DIR__ . "/../assets/themes/{$theme}.php")) {
-			throw new InvalidArgumentException(
-                t('Theme "%1$s" not found. Available themes: %2$s.',
+        if (! file_exists($path = __DIR__ . "/../assets/themes/{$theme}.php")) {
+            throw new InvalidArgumentException(
+                t(
+                    'Theme "%1$s" not found. Available themes: %2$s.',
                     [$theme, implode(', ', array_keys(self::AVAILABLE_THEMES))]
                 )
             );
-		}
+        }
 
         $styles = require $path;
 
@@ -304,8 +310,8 @@ class Application
      * without creating a theme file. Styles are applied immediately and
      * will override any previously defined styles with the same name.
      *
-     * @param array<string, array{fg?: string|int, bg?: string|int, bold?: int}> $styles
-     *        Associative array where keys are style names and values are style definitions
+     * @param array<string, array{fg?: int|string, bg?: int|string, bold?: int}> $styles
+     *                                                                                   Associative array where keys are style names and values are style definitions
      *
      * @return self The current instance
      *
@@ -490,7 +496,7 @@ class Application
         return $this;
     }
 
-	/**
+    /**
      * Set the PSR logger for the application.
      *
      * This method configures a PSR-3 compatible logger that will be available
@@ -524,11 +530,10 @@ class Application
      */
     public function withLogger(LoggerInterface $logger, string $prefix = ''): self
     {
-		$this->app->setLogger($logger, $prefix);
+        $this->app->setLogger($logger, $prefix);
 
         return $this;
     }
-
 
     /**
      * Add multiple commands to the console application.
@@ -536,7 +541,7 @@ class Application
      * This method registers one or more command classes with the application.
      * Each command class must extend the `Command` base class.
      *
-     * @param array<class-string<Command>> $commands Array of command fully qualified class names
+     * @param list<class-string<Command>> $commands Array of command fully qualified class names
      *
      * @return self The current instance
      *
@@ -561,25 +566,25 @@ class Application
         return $this;
     }
 
-	/**
-	 * Set the default command to execute when no command is specified.
-	 *
-	 * This method allows you to define a default command that will be executed
-	 * when the user runs the application without specifying a command.
-	 *
-	 * @param string $command The name of the default command
-	 *
-	 * @return self The current instance
-	 *
-	 * @example
-	 * ```php
-	 * $app->withDefaultCommand('help'); // Show help when no command is specified
-	 * ```
-	 */
-	public function withDefaultCommand(string $command): self
-	{
-		$this->app->defaultCommand($command);
+    /**
+     * Set the default command to execute when no command is specified.
+     *
+     * This method allows you to define a default command that will be executed
+     * when the user runs the application without specifying a command.
+     *
+     * @param string $command The name of the default command
+     *
+     * @return self The current instance
+     *
+     * @example
+     * ```php
+     * $app->withDefaultCommand('help'); // Show help when no command is specified
+     * ```
+     */
+    public function withDefaultCommand(string $command): self
+    {
+        $this->app->defaultCommand($command);
 
-		return $this;
-	}
+        return $this;
+    }
 }

@@ -1,37 +1,44 @@
 <?php
-// tests/Logger.spec.php
+
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
 
 use Ahc\Cli\Output\Writer;
 use Dimtrovich\Console\Components\Logger;
 use Kahlan\Arg;
+use Kahlan\Plugin\Double;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Kahlan\Plugin\Double;
 
 use function Kahlan\expect;
 
 describe('Components / Logger', function () {
-	fileHook(
-		file: 'output-logger.test',
-		beforeAll: function($files) {
-			$this->psrLogger = Double::instance(['implements' => [LoggerInterface::class]]);
+    fileHook(
+        file: 'output-logger.test',
+        beforeAll: function ($files) {
+            $this->psrLogger = Double::instance(['implements' => [LoggerInterface::class]]);
 
-			allow($this->psrLogger)->toReceive('log')->andRun(function($level, $message, $context) use($files) {
-				file_put_contents($files[0], $message);
-			});
-		},
-		beforeEach: function($files) {
-			$this->writer = new Writer($files[0]);
+            allow($this->psrLogger)->toReceive('log')->andRun(function ($level, $message, $context) use ($files) {
+                file_put_contents($files[0], $message);
+            });
+        },
+        beforeEach: function ($files) {
+            $this->writer = new Writer($files[0]);
 
-        	// Configure the logger
-        	Logger::configure($this->writer, $this->psrLogger, 'TEST');
+            // Configure the logger
+            Logger::configure($this->writer, $this->psrLogger, 'TEST');
 
-        	$this->logger = new Logger($this->writer);
-    	},
-	);
+            $this->logger = new Logger($this->writer);
+        },
+    );
 
     describe('configuration', function () {
-
         it('creates singleton instance', function () {
             $logger1 = Logger::instance($this->writer);
             $logger2 = Logger::instance($this->writer);
@@ -60,7 +67,6 @@ describe('Components / Logger', function () {
     });
 
     describe('logging methods', function () {
-
         it('logs info message', function () {
             expect($this->writer)->toReceive('boldWhiteBgBlue')->with(' INFO ')->once();
             expect($this->writer)->toReceive('write')->with(' User logged in', true)->once();
@@ -114,7 +120,6 @@ describe('Components / Logger', function () {
     });
 
     describe('aliased methods', function () {
-
         it('logs success as info with green style', function () {
             expect($this->writer)->toReceive('boldWhiteBgGreen')->with(' INFO ')->once();
 
@@ -151,7 +156,6 @@ describe('Components / Logger', function () {
     });
 
     describe('prefix handling', function () {
-
         it('adds prefix to log messages', function () {
             allow($this->psrLogger)->toReceive('log')->with(LogLevel::INFO, '[TEST] Message', []);
 
@@ -180,7 +184,7 @@ describe('Components / Logger', function () {
         });
 
         it('returns empty prefix when none set', function () {
-			Logger::resetInstance();
+            Logger::resetInstance();
             Logger::configure($this->writer, $this->psrLogger, '');
             $logger = Logger::instance($this->writer);
 
@@ -189,7 +193,6 @@ describe('Components / Logger', function () {
     });
 
     describe('context handling', function () {
-
         it('includes context in PSR log', function () {
             $context = ['user_id' => 123, 'ip' => '127.0.0.1'];
 
@@ -224,7 +227,6 @@ describe('Components / Logger', function () {
     });
 
     describe('icon display', function () {
-
         it('shows icons when globally enabled', function () {
             Logger::showDefaultIcons(true);
 

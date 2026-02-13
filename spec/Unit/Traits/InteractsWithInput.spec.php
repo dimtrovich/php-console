@@ -1,43 +1,53 @@
 <?php
 
-use Dimtrovich\Console\Traits\InteractsWithInput;
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Ahc\Cli\IO\Interactor;
+use Dimtrovich\Console\Traits\InteractsWithInput;
 
 use function Ahc\Cli\t;
 use function Kahlan\expect;
 
 describe('Traits / InteractsWithInput', function () {
     fileHook(
-		file: ['output-io-input.test', 'output-io-writer.test'],
-		beforeAll: function() {
-			$this->getInputer = function($io) {
-				$inputer = new class {
-					use InteractsWithInput;
-					protected $io;
-					protected $writer;
-					protected $reader;
+        file: ['output-io-input.test', 'output-io-writer.test'],
+        beforeAll: function () {
+            $this->getInputer = function ($io) {
+                $inputer = new class () {
+                    use InteractsWithInput;
 
-					public function setParams($io) {
-						$this->io = $io;
-						$this->reader = $io->reader();
-						$this->writer = $io->writer();
+                    protected $io;
+                    protected $writer;
+                    protected $reader;
 
-						return $this;
-					}
-				};
+                    public function setParams($io)
+                    {
+                        $this->io     = $io;
+                        $this->reader = $io->reader();
+                        $this->writer = $io->writer();
 
-				return $inputer->setParams($io);
-			};
-		},
-		beforeEach: function($files) {
-			$this->interactor = new Interactor(...$files);
-			$this->writer = $this->interactor->writer();
-			$this->input = $this->getInputer($this->interactor);
-		},
-	);
+                        return $this;
+                    }
+                };
+
+                return $inputer->setParams($io);
+            };
+        },
+        beforeEach: function ($files) {
+            $this->interactor = new Interactor(...$files);
+            $this->writer     = $this->interactor->writer();
+            $this->input      = $this->getInputer($this->interactor);
+        },
+    );
 
     describe('prompt methods', function () {
-
         it('prompts for input', function () {
             allow($this->interactor)->toReceive('prompt')->with('Enter name:', 'default', null, 3)->andReturn('John');
 
@@ -72,12 +82,11 @@ describe('Traits / InteractsWithInput', function () {
     });
 
     describe('choice methods', function () {
-
         beforeEach(function () {
             $this->choices = [
                 'a' => 'Option A',
                 'b' => 'Option B',
-                'c' => 'Option C'
+                'c' => 'Option C',
             ];
         });
 
@@ -121,7 +130,6 @@ describe('Traits / InteractsWithInput', function () {
     });
 
     describe('askWithCompletion', function () {
-
         it('accepts valid input from choices', function () {
             $choices = ['apple', 'banana', 'orange'];
 
@@ -144,7 +152,6 @@ describe('Traits / InteractsWithInput', function () {
     });
 
     describe('confirm', function () {
-
         it('returns true for affirmative answer', function () {
             allow($this->interactor)->toReceive('confirm')->with('Continue?', 'y')->andReturn(true);
 

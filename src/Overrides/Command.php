@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Overrides;
 
 use Ahc\Cli\Helper\OutputHelper;
@@ -11,8 +20,6 @@ use function Ahc\Cli\t;
 
 /**
  * Overridden Command class with custom help display.
- *
- * @package Dimtrovich\Console\Overrides
  */
 class Command extends AhcCommand
 {
@@ -20,8 +27,6 @@ class Command extends AhcCommand
      * Show default help screen.
      *
      * @override
-     *
-     * @return mixed
      */
     public function showDefaultHelp(): mixed
     {

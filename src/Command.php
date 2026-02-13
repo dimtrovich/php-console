@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console;
 
 use Ahc\Cli\Helper\Terminal;
@@ -21,10 +30,8 @@ use function Ahc\Cli\t;
 /**
  * Base class for creating console commands.
  *
- * @package Dimtrovich\Console
- *
- * @method string name() Get the command name.
  * @method string alias() Get the command alias.
+ * @method string name()  Get the command name.
  */
 abstract class Command
 {
@@ -126,8 +133,8 @@ abstract class Command
      *
      * This method must be implemented by classes extending Command
      * to define the behavior of the command when executed.
-	 *
-	 * @return mixed
+     *
+     * @return mixed
      */
     abstract public function handle();
 
@@ -156,9 +163,9 @@ abstract class Command
     /**
      * Call another command.
      *
-     * @param string                $command   Command name to call
-     * @param array<string, mixed>  $arguments Command arguments
-     * @param array<string, mixed>  $options   Command options
+     * @param string               $command   Command name to call
+     * @param array<string, mixed> $arguments Command arguments
+     * @param array<string, mixed> $options   Command options
      *
      * @return mixed Command execution result
      *
@@ -198,32 +205,32 @@ abstract class Command
         return str_pad(str_repeat(' ', $indent) . $item, $max);
     }
 
-	/**
-	 * Magic method to handle dynamic property access.
-	 *
-	 * This method allows accessing protected properties like 'name' and 'alias'
-	 * as if they were methods (e.g., $command->name()).
-	 *
-	 * @param string $name      The property name being accessed as a method
-	 * @param array  $arguments Method arguments (not used, maintained for signature compatibility)
-	 *
-	 * @return mixed The property value if it exists, empty string if property is null
-	 *
-	 * @throws InvalidArgumentException If the property does not exist on the class
-	 *
-	 * @example
-	 * ```php
-	 * $name = $command->name(); // Returns the command name
-	 * $alias = $command->alias(); // Returns the command alias
-	 * ```
-	 */
+    /**
+     * Magic method to handle dynamic property access.
+     *
+     * This method allows accessing protected properties like 'name' and 'alias'
+     * as if they were methods (e.g., $command->name()).
+     *
+     * @param string $name      The property name being accessed as a method
+     * @param array  $arguments Method arguments (not used, maintained for signature compatibility)
+     *
+     * @return mixed The property value if it exists, empty string if property is null
+     *
+     * @throws InvalidArgumentException If the property does not exist on the class
+     *
+     * @example
+     * ```php
+     * $name = $command->name(); // Returns the command name
+     * $alias = $command->alias(); // Returns the command alias
+     * ```
+     */
     public function __call(string $name, array $arguments = [])
-	{
-		if (property_exists($this, $name)) {
+    {
+        if (property_exists($this, $name)) {
             return $this->{$name} ?? '';
         }
 
-		throw new InvalidArgumentException(t('Undefined method "%s" called.', [$name]));
+        throw new InvalidArgumentException(t('Undefined method "%s" called.', [$name]));
     }
 
     /**
@@ -256,9 +263,9 @@ abstract class Command
     protected function configure(BaseCommand $command): void
     {
         $command->inGroup($this->group)
-                ->usage($this->usage)
-                ->version($this->version)
-				->alias($this->alias);
+            ->usage($this->usage)
+            ->version($this->version)
+            ->alias($this->alias);
 
         $this->defineOptions($command);
         $this->defineArguments($command);

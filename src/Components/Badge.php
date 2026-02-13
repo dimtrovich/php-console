@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Components;
 
 use Ahc\Cli\Output\Writer;
@@ -10,13 +19,11 @@ use Exception;
 
 /**
  * Badge component for console output.
- *
- * @package Dimtrovich\Console\Components
  */
 class Badge
 {
-	use IconTrait;
-	use SingletonTrait;
+    use IconTrait;
+    use SingletonTrait;
 
     /**
      * Writer instance.
@@ -40,12 +47,11 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function info(string $message, string $label = 'INFO', string|null|false $icon = null): self
+    public function info(string $message, string $label = 'INFO', false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, Icon::INFO);
+
         return $this->render($message, $label, 'boldWhiteBgCyan', $resolvedIcon);
     }
 
@@ -56,12 +62,11 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function success(string $message, string $label = 'SUCCESS', string|null|false $icon = null): self
+    public function success(string $message, string $label = 'SUCCESS', false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, Icon::SUCCESS);
+
         return $this->render($message, $label, 'boldWhiteBgGreen', $resolvedIcon);
     }
 
@@ -72,12 +77,11 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function warning(string $message, string $label = 'WARNING', string|null|false $icon = null): self
+    public function warning(string $message, string $label = 'WARNING', false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, Icon::WARNING);
+
         return $this->render($message, $label, 'boldWhiteBgYellow', $resolvedIcon);
     }
 
@@ -88,12 +92,11 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function error(string $message, string $label = 'ERROR', string|null|false $icon = null): self
+    public function error(string $message, string $label = 'ERROR', false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, Icon::ERROR);
+
         return $this->render($message, $label, 'boldWhiteBgRed', $resolvedIcon);
     }
 
@@ -104,10 +107,8 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function danger(string $message, string $label = 'DANGER', string|null|false $icon = null): self
+    public function danger(string $message, string $label = 'DANGER', false|string|null $icon = null): self
     {
         return $this->error($message, $label, $icon);
     }
@@ -119,12 +120,11 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function primary(string $message, string $label = 'PRIMARY', string|null|false $icon = null): self
+    public function primary(string $message, string $label = 'PRIMARY', false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, Icon::PRIMARY);
+
         return $this->render($message, $label, 'boldWhiteBgBlue', $resolvedIcon);
     }
 
@@ -135,12 +135,11 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function secondary(string $message, string $label = 'SECONDARY', string|null|false $icon = null): self
+    public function secondary(string $message, string $label = 'SECONDARY', false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, Icon::SECONDARY);
+
         return $this->render($message, $label, 'boldWhiteBgGray', $resolvedIcon);
     }
 
@@ -151,12 +150,11 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function dark(string $message, string $label = 'DARK', string|null|false $icon = null): self
+    public function dark(string $message, string $label = 'DARK', false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, Icon::DARK);
+
         return $this->render($message, $label, 'boldWhiteBgBlack', $resolvedIcon);
     }
 
@@ -167,12 +165,11 @@ class Badge
      * @param string      $label   Badge label
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function light(string $message, string $label = 'LIGHT', string|null|false $icon = null): self
+    public function light(string $message, string $label = 'LIGHT', false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, Icon::LIGHT);
+
         return $this->render($message, $label, 'boldBlackBgWhite', $resolvedIcon);
     }
 
@@ -184,10 +181,8 @@ class Badge
      * @param string      $color   Badge color
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function outline(string $message, string $label = 'OUTLINE', string $color = 'blue', string|null|false $icon = null): self
+    public function outline(string $message, string $label = 'OUTLINE', string $color = 'blue', false|string|null $icon = null): self
     {
         $method = match ($color) {
             'info'      => 'boldCyan',
@@ -225,10 +220,8 @@ class Badge
      * @param string      $color   Badge color
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function pill(string $message, string $label = 'PILL', string $color = 'blue', string|null|false $icon = null): self
+    public function pill(string $message, string $label = 'PILL', string $color = 'blue', false|string|null $icon = null): self
     {
         $method = match ($color) {
             'info'      => 'boldWhiteBgCyan',
@@ -262,12 +255,11 @@ class Badge
      * @param string      $style   Writer method to use for styling
      * @param string|null $icon    Optional icon to display before the label
      *                             (null = use default if enabled, false = no icon)
-     *
-     * @return self
      */
-    public function custom(string $message, string $label, string $style, string|null|false $icon = null): self
+    public function custom(string $message, string $label, string $style, false|string|null $icon = null): self
     {
         $resolvedIcon = $this->resolveIcon($icon, null);
+
         return $this->render($message, $label, $style, $resolvedIcon);
     }
 
@@ -278,8 +270,6 @@ class Badge
      * @param string      $label   Badge label
      * @param string      $style   Writer method to use for styling
      * @param string|null $icon    Resolved icon (null = no icon)
-     *
-     * @return self
      */
     private function render(string $message, string $label, string $style, ?string $icon): self
     {
@@ -297,9 +287,9 @@ class Badge
         return $this;
     }
 
-	private function getColorDefaultIcon(string $color): ?string
-	{
-		return match ($color) {
+    private function getColorDefaultIcon(string $color): ?string
+    {
+        return match ($color) {
             'info'      => Icon::INFO,
             'success'   => Icon::SUCCESS,
             'warning'   => Icon::WARNING,
@@ -311,5 +301,5 @@ class Badge
             'light'     => Icon::LIGHT,
             default     => null,
         };
-	}
+    }
 }

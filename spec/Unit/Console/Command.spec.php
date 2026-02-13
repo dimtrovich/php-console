@@ -1,44 +1,58 @@
 <?php
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Dimtrovich\Console\Command;
 use Dimtrovich\Console\Console;
 
 use function Kahlan\expect;
 
 describe('Command', function () {
-
     beforeEach(function () {
         $this->console = new Console('Test', '1.0.0');
     });
 
     describe('initialization', function () {
-
         it('initializes with console instance', function () {
-            $command = new class extends Command {
+            $command = new class () extends Command {
                 protected string $name = 'test:init';
-                public function handle() { return 0; }
+
+                public function handle()
+                {
+                    return 0;
+                }
             };
 
             $baseCommand = $command->initialize($this->console);
 
-            expect($baseCommand)->toBeAnInstanceOf(\Dimtrovich\Console\Overrides\Command::class);
+            expect($baseCommand)->toBeAnInstanceOf(Dimtrovich\Console\Overrides\Command::class);
         });
 
         it('sets required properties', function () {
-            $command = new class extends Command {
-                protected string $name = 'test:props';
-                protected string $group = 'testing';
+            $command = new class () extends Command {
+                protected string $name        = 'test:props';
+                protected string $group       = 'testing';
                 protected string $description = 'Test description';
-                protected string $version = '1.2.3';
-                protected string $alias = 't:p';
+                protected string $version     = '1.2.3';
+                protected string $alias       = 't:p';
 
-                public function handle() { return 0; }
+                public function handle()
+                {
+                    return 0;
+                }
             };
 
             $baseCommand = $command->initialize($this->console);
 
-			expect($baseCommand)->toBeAnInstanceOf(Dimtrovich\Console\Overrides\Command::class);
-			expect($baseCommand->name())->toBe('test:props');
+            expect($baseCommand)->toBeAnInstanceOf(Dimtrovich\Console\Overrides\Command::class);
+            expect($baseCommand->name())->toBe('test:props');
             expect($baseCommand->desc())->toBe('Test description');
             expect($baseCommand->group())->toBe('testing');
             expect($baseCommand->alias())->toBe('t:p');
@@ -46,15 +60,16 @@ describe('Command', function () {
     });
 
     describe('argument and option handling', function () {
-
         it('defines arguments correctly', function () {
-            $command = new class extends Command {
-                protected string $name = 'test:args';
+            $command = new class () extends Command {
+                protected string $name     = 'test:args';
                 protected array $arguments = [
                     'name' => ['The name of the user'],
-                    'age'  => ['The age of the user', 25]
+                    'age'  => ['The age of the user', 25],
                 ];
-                public function handle() {
+
+                public function handle()
+                {
                     return $this->arguments();
                 }
             };
@@ -65,13 +80,15 @@ describe('Command', function () {
         });
 
         it('defines options correctly', function () {
-            $command = new class extends Command {
-                protected string $name = 'test:opts';
+            $command = new class () extends Command {
+                protected string $name   = 'test:opts';
                 protected array $options = [
                     'force' => ['Force the operation', false],
-                    'env'   => ['The environment', 'prod', 'strval']
+                    'env'   => ['The environment', 'prod', 'strval'],
                 ];
-                public function handle() {
+
+                public function handle()
+                {
                     return $this->options();
                 }
             };
@@ -82,10 +99,12 @@ describe('Command', function () {
         });
 
         it('retrieves argument values', function () {
-            $command = new class extends Command {
-                protected string $name = 'test:get';
+            $command = new class () extends Command {
+                protected string $name     = 'test:get';
                 protected array $arguments = ['id' => ['User ID']];
-                public function handle() {
+
+                public function handle()
+                {
                     return $this->argument('id');
                 }
             };
@@ -97,9 +116,11 @@ describe('Command', function () {
         });
 
         it('returns default for missing argument', function () {
-            $command = new class extends Command {
+            $command = new class () extends Command {
                 protected string $name = 'test:default';
-                public function handle() {
+
+                public function handle()
+                {
                     return $this->argument('missing', 'default');
                 }
             };
@@ -111,13 +132,15 @@ describe('Command', function () {
         });
 
         it('checks if argument exists', function () {
-            $command = new class extends Command {
-                protected string $name = 'test:has';
+            $command = new class () extends Command {
+                protected string $name     = 'test:has';
                 protected array $arguments = ['id' => ['User ID']];
-                public function handle() {
+
+                public function handle()
+                {
                     return [
-                        'has_id' => $this->hasArgument('id'),
-                        'has_name' => $this->hasArgument('name')
+                        'has_id'   => $this->hasArgument('id'),
+                        'has_name' => $this->hasArgument('name'),
                     ];
                 }
             };
@@ -130,12 +153,14 @@ describe('Command', function () {
         });
 
         it('retrieves option values', function () {
-            $command = new class extends Command {
-                protected string $name = 'test:opt';
+            $command = new class () extends Command {
+                protected string $name   = 'test:opt';
                 protected array $options = [
-                    'force' => ['Force operation', false]
+                    'force' => ['Force operation', false],
                 ];
-                public function handle() {
+
+                public function handle()
+                {
                     return $this->option('force');
                 }
             };
@@ -148,12 +173,14 @@ describe('Command', function () {
     });
 
     describe('command calling', function () {
-
         beforeEach(function () {
-            $this->command2 = new class extends Command {
+            $this->command2 = new class () extends Command {
                 protected string $name = 'second';
-                public function handle() {
+
+                public function handle()
+                {
                     $this->writer->write('Second executed');
+
                     return 99;
                 }
             };
@@ -161,9 +188,11 @@ describe('Command', function () {
         });
 
         it('calls another command', function () {
-            $command1 = new class extends Command {
+            $command1 = new class () extends Command {
                 protected string $name = 'first';
-                public function handle() {
+
+                public function handle()
+                {
                     return $this->call('second');
                 }
             };
@@ -175,9 +204,11 @@ describe('Command', function () {
         });
 
         it('calls another command with arguments', function () {
-            $command1 = new class extends Command {
+            $command1 = new class () extends Command {
                 protected string $name = 'first';
-                public function handle() {
+
+                public function handle()
+                {
                     return $this->call('second', ['arg' => 'value']);
                 }
             };
@@ -185,15 +216,17 @@ describe('Command', function () {
             $this->console->addCommand(get_class($command1));
 
             // Pas d'exception = succès
-            expect(function () use ($command1) {
+            expect(function () {
                 $this->console->call('first');
             })->not->toThrow();
         });
 
         it('checks command existence', function () {
-            $command = new class extends Command {
+            $command = new class () extends Command {
                 protected string $name = 'checker';
-                public function handle() {
+
+                public function handle()
+                {
                     return $this->commandExists('second');
                 }
             };
@@ -206,12 +239,15 @@ describe('Command', function () {
     });
 
     describe('magic methods', function () {
-
         it('accesses name via __call', function () {
-            $command = new class extends Command {
-                protected string $name = 'magic:name';
+            $command = new class () extends Command {
+                protected string $name  = 'magic:name';
                 protected string $alias = 'mn';
-                public function handle() { return 0; }
+
+                public function handle()
+                {
+                    return 0;
+                }
             };
 
             expect($command->name())->toBe('magic:name');
@@ -219,9 +255,13 @@ describe('Command', function () {
         });
 
         it('throws exception for undefined method', function () {
-            $command = new class extends Command {
+            $command = new class () extends Command {
                 protected string $name = 'test';
-                public function handle() { return 0; }
+
+                public function handle()
+                {
+                    return 0;
+                }
             };
 
             expect(function () use ($command) {
@@ -231,11 +271,14 @@ describe('Command', function () {
     });
 
     describe('pad method', function () {
-
         it('pads a string with spaces', function () {
-            $command = new class extends Command {
+            $command = new class () extends Command {
                 protected string $name = 'test';
-                public function handle() { return 0; }
+
+                public function handle()
+                {
+                    return 0;
+                }
             };
 
             expect($command->pad('test', 10))->toBe('test        ');

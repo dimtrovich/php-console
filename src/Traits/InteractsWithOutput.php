@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Traits;
 
 use Ahc\Cli\Helper\Terminal;
@@ -24,81 +33,78 @@ use function Ahc\Cli\t;
  * @property Terminal $terminal
  * @property Writer   $writer
  *
- * @package Dimtrovich\Console\Traits
  * @mixin \Dimtrovich\Console\Command
  */
 trait InteractsWithOutput
 {
-	use FormatsOutput;
+    use FormatsOutput;
 
-	 /**
-	  * Get the Alert component instance.
-	  */
-	public function alert(): Alert
-	{
-		return Alert::instance($this->writer);
-	}
+    /**
+     * Get the Alert component instance.
+     */
+    public function alert(): Alert
+    {
+        return Alert::instance($this->writer);
+    }
 
-	/**
-	 * Get the Badge component instance.
-	 */
-	public function badge(): Badge
-	{
-		return Badge::instance($this->writer);
-	}
+    /**
+     * Get the Badge component instance.
+     */
+    public function badge(): Badge
+    {
+        return Badge::instance($this->writer);
+    }
 
-	/**
-	 * Get the Logger component instance.
-	 *
-	 * This method provides access to the logging system, which combines
-	 * console output with PSR-3 logging. Each log message will be:
-	 * - Displayed in the console with appropriate styling and icons
-	 * - Sent to the configured PSR logger with an optional prefix
-	 *
-	 * @param string $prefix Optional prefix for this logger instance.
-	 *                       If different from current prefix, returns a new instance.
-	 *                       Use empty string to get the default logger.
-	 *
-	 * @return Logger The logger instance
-	 *
-	 * @example
-	 * ```php
-	 * // Basic usage with default prefix
-	 * $this->log()->info('User logged in');
-	 *
-	 * // With specific prefix for this block
-	 * $dbLogger = $this->log('DB');
-	 * $dbLogger->debug('Connecting to database');
-	 *
-	 * // Chained prefixes
-	 * $this->log('APP')
-	 *      ->withPrefix('CACHE')
-	 *      ->info('Cache cleared');
-	 * // Console: [APP > CACHE] Cache cleared
-	 * ```
-	 */
-	public function log(string $prefix = ''): Logger
-	{
-		if (!Logger::hasLogger()) {
-			throw new RuntimeException(t('No PSR logger configured. Use $app->withLogger() to set one.'));
-		}
+    /**
+     * Get the Logger component instance.
+     *
+     * This method provides access to the logging system, which combines
+     * console output with PSR-3 logging. Each log message will be:
+     * - Displayed in the console with appropriate styling and icons
+     * - Sent to the configured PSR logger with an optional prefix
+     *
+     * @param string $prefix Optional prefix for this logger instance.
+     *                       If different from current prefix, returns a new instance.
+     *                       Use empty string to get the default logger.
+     *
+     * @return Logger The logger instance
+     *
+     * @example
+     * ```php
+     * // Basic usage with default prefix
+     * $this->log()->info('User logged in');
+     *
+     * // With specific prefix for this block
+     * $dbLogger = $this->log('DB');
+     * $dbLogger->debug('Connecting to database');
+     *
+     * // Chained prefixes
+     * $this->log('APP')
+     *      ->withPrefix('CACHE')
+     *      ->info('Cache cleared');
+     * // Console: [APP > CACHE] Cache cleared
+     * ```
+     */
+    public function log(string $prefix = ''): Logger
+    {
+        if (! Logger::hasLogger()) {
+            throw new RuntimeException(t('No PSR logger configured. Use $app->withLogger() to set one.'));
+        }
 
-		$logger = Logger::instance($this->writer);
+        $logger = Logger::instance($this->writer);
 
-		if ($prefix !== '' && $prefix !== $logger->prefix()) {
-			return new Logger($this->writer, $prefix);
-		}
+        if ($prefix !== '' && $prefix !== $logger->prefix()) {
+            return new Logger($this->writer, $prefix);
+        }
 
-		return $logger;
-	}
+        return $logger;
+    }
 
     /**
      * Display currently executing task.
      *
-     * @param string    $task  Task description
-     * @param int|null  $sleep Sleep duration in seconds
-     *
-     * @return self
+     * @param string   $task  Task description
+     * @param int|null $sleep Sleep duration in seconds
      */
     public function task(string $task, ?int $sleep = null): self
     {
@@ -137,9 +143,9 @@ trait InteractsWithOutput
      * 2. New signature: table(array $headers, array $rows, array $styles = [])
      *    Where $headers is a 1D array and $rows is a 2D array
      *
-     * @param array<array<string, mixed>>|array<string> $headers Table headers
-     * @param array<array<string, mixed>>|array<string, mixed> $rows Table rows
-     * @param array<string, mixed> $styles Table styles (only for new signature)
+     * @param list<array<string, mixed>>|list<string>         $headers Table headers
+     * @param array<string, mixed>|list<array<string, mixed>> $rows    Table rows
+     * @param array<string, mixed>                            $styles  Table styles (only for new signature)
      */
     public function table(array $headers, array $rows = [], array $styles = []): self
     {
@@ -147,11 +153,11 @@ trait InteractsWithOutput
         if ($this->isTwoDimensionalArray($headers)) {
             // Old signature: table($rows, $styles)
             $styles = $rows;
-			$rows = $headers;
+            $rows   = $headers;
         } else {
-			// Convert headers and rows to format expected by adhocore/cli
-			$rows = $this->formatTableData($headers, $rows);
-		}
+            // Convert headers and rows to format expected by adhocore/cli
+            $rows = $this->formatTableData($headers, $rows);
+        }
 
         $this->writer->table($rows, $styles);
 
@@ -182,10 +188,10 @@ trait InteractsWithOutput
     /**
      * Format table data from header/rows format to adhocore/cli format.
      *
-     * @param array<string>                $headers Table headers
-     * @param array<array<string|mixed>>   $rows    Table rows
+     * @param list<string>             $headers Table headers
+     * @param list<list<mixed|string>> $rows    Table rows
      *
-     * @return array<array<string, mixed>> Formatted rows
+     * @return list<array<string, mixed>> Formatted rows
      */
     private function formatTableData(array $headers, array $rows): array
     {
@@ -196,7 +202,7 @@ trait InteractsWithOutput
 
             foreach ($headers as $index => $header) {
                 // Use header as key, value from row at same index
-                $value = $row[$index] ?? '';
+                $value                 = $row[$index] ?? '';
                 $formattedRow[$header] = $value;
             }
 
@@ -210,8 +216,6 @@ trait InteractsWithOutput
      * Display JSON formatted data.
      *
      * @param mixed $data Data to display as JSON
-     *
-     * @return self
      */
     public function json($data): self
     {
@@ -225,8 +229,6 @@ trait InteractsWithOutput
      *
      * @param int|null $length Border length
      * @param string   $char   Border character
-     *
-     * @return self
      */
     public function border(?int $length = null, string $char = '-'): self
     {
@@ -241,8 +243,6 @@ trait InteractsWithOutput
      * Write text with tabs.
      *
      * @param int $repeat Number of tabs
-     *
-     * @return self
      */
     public function tab(int $repeat = 1): self
     {
@@ -254,10 +254,8 @@ trait InteractsWithOutput
     /**
      * Write text at the center of console.
      *
-     * @param string              $text    Text to center
+     * @param string               $text    Text to center
      * @param array<string, mixed> $options Center options
-     *
-     * @return self
      */
     public function center(string $text, array $options = []): self
     {
@@ -277,11 +275,9 @@ trait InteractsWithOutput
     /**
      * Write justified text (left and right aligned).
      *
-     * @param string              $first   Left text
-     * @param string|null         $second  Right text
+     * @param string               $first   Left text
+     * @param string|null          $second  Right text
      * @param array<string, mixed> $options Justify options
-     *
-     * @return self
      */
     public function justify(string $first, ?string $second = '', array $options = []): self
     {
@@ -306,8 +302,6 @@ trait InteractsWithOutput
      * Add end of line(s).
      *
      * @param int $n Number of end of lines
-     *
-     * @return static
      */
     public function eol(int $n = 1): static
     {
@@ -318,8 +312,6 @@ trait InteractsWithOutput
 
     /**
      * Add a new empty line.
-     *
-     * @return self
      */
     public function newLine(): self
     {
@@ -331,8 +323,6 @@ trait InteractsWithOutput
      *
      * @param string $text Text to write
      * @param bool   $eol  Whether to add end of line
-     *
-     * @return self
      */
     public function write(string $text, bool $eol = false): self
     {

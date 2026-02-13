@@ -1,12 +1,21 @@
 <?php
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Ahc\Cli\Output\Writer;
-use Dimtrovich\Console\Overrides\Cursor;
-use Dimtrovich\Console\Traits\InteractsWithOutput;
 use Dimtrovich\Console\Components\Alert;
 use Dimtrovich\Console\Components\Badge;
 use Dimtrovich\Console\Components\Logger;
 use Dimtrovich\Console\Components\ProgressBar;
+use Dimtrovich\Console\Overrides\Cursor;
+use Dimtrovich\Console\Traits\InteractsWithOutput;
 use Kahlan\Arg;
 use Kahlan\Plugin\Double;
 use Psr\Log\LoggerInterface;
@@ -15,38 +24,39 @@ use Psr\Log\LogLevel;
 use function Kahlan\expect;
 
 describe('Traits / InteractsWithOutput', function () {
-   	fileHook(
-		file: 'output-io-output.test',
-		beforeAll: function() {
-			$this->getOutputer = function($writer) {
-				$inputer = new class {
-					use InteractsWithOutput;
-					protected $writer;
-					protected $terminal;
-					protected $cursor;
-					protected $color;
+    fileHook(
+        file: 'output-io-output.test',
+        beforeAll: function () {
+            $this->getOutputer = function ($writer) {
+                $inputer = new class () {
+                    use InteractsWithOutput;
 
-					public function setParams($writer) {
-						$this->writer = $writer;
-						$this->terminal = $writer->terminal();
-						$this->color = $this->writer->colorizer();
-						$this->cursor = new Cursor();
+                    protected $writer;
+                    protected $terminal;
+                    protected $cursor;
+                    protected $color;
 
-						return $this;
-					}
-				};
+                    public function setParams($writer)
+                    {
+                        $this->writer   = $writer;
+                        $this->terminal = $writer->terminal();
+                        $this->color    = $this->writer->colorizer();
+                        $this->cursor   = new Cursor();
 
-				return $inputer->setParams($writer);
-			};
-		},
-		beforeEach: function($files) {
-			$this->writer = new Writer($files[0]);
-			$this->output = $this->getOutputer($this->writer);
-		},
-   	);
+                        return $this;
+                    }
+                };
+
+                return $inputer->setParams($writer);
+            };
+        },
+        beforeEach: function ($files) {
+            $this->writer = new Writer($files[0]);
+            $this->output = $this->getOutputer($this->writer);
+        },
+    );
 
     describe('components', function () {
-
         it('returns Alert instance', function () {
             expect(Alert::instance($this->writer))->toBeAnInstanceOf(Alert::class);
 
@@ -61,7 +71,6 @@ describe('Traits / InteractsWithOutput', function () {
     });
 
     describe('task display', function () {
-
         it('displays task', function () {
             expect($this->writer)->toReceive('write')->with('>> Processing...', true)->once();
 
@@ -82,11 +91,10 @@ describe('Traits / InteractsWithOutput', function () {
     });
 
     describe('table', function () {
-
         it('displays table with old signature (2D array)', function () {
             $rows = [
                 ['name' => 'John', 'age' => 30],
-                ['name' => 'Jane', 'age' => 25]
+                ['name' => 'Jane', 'age' => 25],
             ];
 
             expect($this->writer)->toReceive('table')->with($rows, [])->once();
@@ -96,14 +104,14 @@ describe('Traits / InteractsWithOutput', function () {
 
         it('displays table with new signature (headers + rows)', function () {
             $headers = ['Name', 'Age'];
-            $rows = [
+            $rows    = [
                 ['John', 30],
-                ['Jane', 25]
+                ['Jane', 25],
             ];
 
-			$expectedRows = [
+            $expectedRows = [
                 ['Name' => 'John', 'Age' => 30],
-                ['Name' => 'Jane', 'Age' => 25]
+                ['Name' => 'Jane', 'Age' => 25],
             ];
 
             expect($this->writer)->toReceive('table')->with($expectedRows, [])->once();
@@ -113,8 +121,8 @@ describe('Traits / InteractsWithOutput', function () {
 
         it('displays table with styles', function () {
             $headers = ['ID', 'Name'];
-            $rows = [[1, 'Alice']];
-            $styles = ['border' => '|', 'padding' => 2];
+            $rows    = [[1, 'Alice']];
+            $styles  = ['border' => '|', 'padding' => 2];
 
             expect($this->writer)->toReceive('table')->with(Arg::toBeA('array'), $styles)->once();
 
@@ -123,7 +131,6 @@ describe('Traits / InteractsWithOutput', function () {
     });
 
     describe('json', function () {
-
         it('displays JSON formatted data', function () {
             $data = ['name' => 'John', 'age' => 30];
 
@@ -137,7 +144,6 @@ describe('Traits / InteractsWithOutput', function () {
     });
 
     describe('progress bar', function () {
-
         it('creates progress bar instance', function () {
             $progress = $this->output->progress(100);
 
@@ -152,9 +158,8 @@ describe('Traits / InteractsWithOutput', function () {
     });
 
     describe('clear screen', function () {
-
         it('clears screen on non-Windows', function () {
-			$terminal = $this->writer->terminal();
+            $terminal = $this->writer->terminal();
             allow($terminal)->toReceive('isWindows')->andReturn(false);
 
             expect($this->writer)->toReceive('raw')->with("\033[H\033[2J")->once();
@@ -163,11 +168,11 @@ describe('Traits / InteractsWithOutput', function () {
         });
 
         xit('clears screen on Windows with VT100', function () {
-			$terminal = $this->writer->terminal();
+            $terminal = $this->writer->terminal();
             allow($terminal)->toReceive('isWindows')->andReturn(true);
 
             // Mock sapi_windows_vt100_support
-            if (!function_exists('sapi_windows_vt100_support')) {
+            if (! function_exists('sapi_windows_vt100_support')) {
                 eval('function sapi_windows_vt100_support($stream) { return true; }');
             }
 
@@ -178,7 +183,6 @@ describe('Traits / InteractsWithOutput', function () {
     });
 
     describe('counter', function () {
-
         it('displays counter with animation', function () {
             expect($this->writer)->toReceive('write')->times(202); // (0-100) 2 times
             expect($this->writer)->toReceive('eol')->once();
@@ -194,9 +198,7 @@ describe('Traits / InteractsWithOutput', function () {
         });
     });
 
-
-
-	describe('Justify / center / border', function() {
+    describe('Justify / center / border', function () {
         it('writes border line', function () {
             expect($this->writer)->toReceive('comment')->with(Arg::toContain('---'))->once();
 
@@ -214,14 +216,14 @@ describe('Traits / InteractsWithOutput', function () {
 
             $this->output->center('Centered');
         });
-	});
+    });
 
-	describe('log method', function () {
-		beforeEach(function () {
-			$this->psrLogger = Double::instance(['implements' => [LoggerInterface::class]]);
+    describe('log method', function () {
+        beforeEach(function () {
+            $this->psrLogger = Double::instance(['implements' => [LoggerInterface::class]]);
 
-			Logger::setLogger($this->psrLogger, 'TEST');
-		});
+            Logger::setLogger($this->psrLogger, 'TEST');
+        });
 
         it('returns Logger instance', function () {
             $logger = $this->output->log();
@@ -252,7 +254,7 @@ describe('Traits / InteractsWithOutput', function () {
             $logger1 = $this->output->log();
             $logger2 = $this->output->log();
 
-			expect($logger1)->toBe($logger2);
+            expect($logger1)->toBe($logger2);
         });
 
         it('throws exception when no logger configured', function () {
@@ -268,7 +270,7 @@ describe('Traits / InteractsWithOutput', function () {
         });
 
         it('logs through the returned instance', function () {
-			$this->output->log()->resetInstance();
+            $this->output->log()->resetInstance();
 
             allow($this->psrLogger)->toReceive('log')->with(LogLevel::INFO, '[TEST] Message', []);
 

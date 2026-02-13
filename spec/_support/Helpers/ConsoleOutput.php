@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Tests\Helpers;
 
 use php_user_filter;
@@ -41,9 +50,9 @@ class ConsoleOutput
     public static function tearDownAfterClass(): void
     {
         // Make sure we clean up after ourselves:
-		if (file_exists(static::$ou)) {
-			unlink(static::$ou);
-		}
+        if (file_exists(static::$ou)) {
+            unlink(static::$ou);
+        }
     }
 
     public static function buffer()

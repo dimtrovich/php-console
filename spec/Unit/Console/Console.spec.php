@@ -1,41 +1,51 @@
 <?php
 
-use Dimtrovich\Console\Console;
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Dimtrovich\Console\Command;
-use Dimtrovich\Console\Exceptions\CommandNotFoundException;
+use Dimtrovich\Console\Console;
 use Dimtrovich\Console\Exceptions\InvalidCommandException;
-use Tests\Helpers\ConsoleOutput;
 use Tests\Fixtures\InvalidCommand;
+use Tests\Helpers\ConsoleOutput;
 
 use function Ahc\Cli\t;
 use function Kahlan\expect;
 
 describe('Console', function () {
-	beforeAll(function (): void {
+    beforeAll(function (): void {
         ConsoleOutput::setUpBeforeClass();
-	});
+    });
 
     afterAll(function (): void {
         ConsoleOutput::tearDownAfterClass();
-	});
+    });
 
-	afterEach(function (): void {
+    afterEach(function (): void {
         ConsoleOutput::tearDown();
-	});
+    });
 
-	beforeEach(function () {
+    beforeEach(function () {
         ConsoleOutput::setUp();
         $this->console = new Console('Test Console', '1.0.0');
     });
 
     describe('command registration', function () {
-
         context('with valid command', function () {
-
             it('adds a command and makes it available', function () {
-                $command = new class extends Command {
+                $command = new class () extends Command {
                     protected string $name = 'test:command';
-                    public function handle() { return 0; }
+
+                    public function handle()
+                    {
+                        return 0;
+                    }
                 };
 
                 $this->console->addCommand(get_class($command));
@@ -44,10 +54,14 @@ describe('Console', function () {
             });
 
             it('registers command with alias', function () {
-                $command = new class extends Command {
-                    protected string $name = 'test:alias';
+                $command = new class () extends Command {
+                    protected string $name  = 'test:alias';
                     protected string $alias = 't:a';
-                    public function handle() { return 0; }
+
+                    public function handle()
+                    {
+                        return 0;
+                    }
                 };
 
                 $this->console->addCommand(get_class($command));
@@ -57,7 +71,6 @@ describe('Console', function () {
         });
 
         context('with invalid command', function () {
-
             it('throws InvalidCommandException', function () {
                 expect(function () {
                     $this->console->addCommand(InvalidCommand::class);
@@ -65,7 +78,7 @@ describe('Console', function () {
             });
 
             it('throws exception for non-Command classes', function () {
-                $invalidClass = new class {};
+                $invalidClass = new class () {};
 
                 expect(function () use ($invalidClass) {
                     $this->console->addCommand(get_class($invalidClass));
@@ -75,12 +88,15 @@ describe('Console', function () {
     });
 
     describe('command retrieval', function () {
-
         beforeEach(function () {
-            $this->testCommand = new class extends Command {
-                protected string $name = 'retrieve:test';
+            $this->testCommand = new class () extends Command {
+                protected string $name  = 'retrieve:test';
                 protected string $alias = 'rt';
-                public function handle() { return 0; }
+
+                public function handle()
+                {
+                    return 0;
+                }
             };
             $this->console->addCommand(get_class($this->testCommand));
         });
@@ -106,8 +122,8 @@ describe('Console', function () {
             // first call - should put it in cache
             $this->console->commandExists('retrieve:test');
 
-			// Check if the cache it's using
-            $reflection = new ReflectionClass($this->console);
+            // Check if the cache it's using
+            $reflection    = new ReflectionClass($this->console);
             $cacheProperty = $reflection->getProperty('commandCached');
             $cacheProperty->setAccessible(true);
             $cache = $cacheProperty->getValue($this->console);
@@ -117,14 +133,16 @@ describe('Console', function () {
     });
 
     describe('command execution', function () {
-
         beforeEach(function () {
-            $this->command = new class extends Command {
-                protected string $name = 'exec:test';
+            $this->command = new class () extends Command {
+                protected string $name     = 'exec:test';
                 protected array $arguments = ['name' => ['Person to greet']];
-                public function handle() {
+
+                public function handle()
+                {
                     $name = $this->argument('name', 'World');
                     $this->writer->write("Hello, {$name}!");
+
                     return 42;
                 }
             };
@@ -163,9 +181,9 @@ describe('Console', function () {
         });
 
         it('throws CommandNotFoundException for non-existent command', function () {
-			$this->console->onExit(fn($exitCode) => $exitCode);
+            $this->console->onExit(fn ($exitCode) => $exitCode);
 
-			$result = $this->console->call('non-existent');
+            $result = $this->console->call('non-existent');
             $output = ConsoleOutput::buffer();
 
             expect($output)->toContain(t('Command %s not found', ['non-existent']));
@@ -174,16 +192,19 @@ describe('Console', function () {
     });
 
     describe('hooks and flags', function () {
-
         it('executes before hook', function () {
             $executed = false;
             $this->console->setHook('before', function () use (&$executed) {
                 $executed = true;
             });
 
-            $command = new class extends Command {
+            $command = new class () extends Command {
                 protected string $name = 'hook:before';
-                public function handle() { return 0; }
+
+                public function handle()
+                {
+                    return 0;
+                }
             };
             $this->console->addCommand(get_class($command));
             $this->console->call('hook:before');
@@ -197,9 +218,13 @@ describe('Console', function () {
                 $executed = true;
             });
 
-            $command = new class extends Command {
+            $command = new class () extends Command {
                 protected string $name = 'hook:after';
-                public function handle() { return 0; }
+
+                public function handle()
+                {
+                    return 0;
+                }
             };
             $this->console->addCommand(get_class($command));
             $this->console->call('hook:after');
@@ -211,7 +236,7 @@ describe('Console', function () {
             $this->console->setFlag('debug', true);
 
             $reflection = new ReflectionClass($this->console);
-            $flags = $reflection->getProperty('flags');
+            $flags      = $reflection->getProperty('flags');
             $flags->setAccessible(true);
             $value = $flags->getValue($this->console);
 

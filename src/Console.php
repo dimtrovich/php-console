@@ -2,13 +2,22 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Blitz PHP - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console;
 
 use Ahc\Cli\Application;
+use BlitzPHP\Contracts\Container\ContainerInterface;
 use Dimtrovich\Console\Components\Logger;
 use Dimtrovich\Console\Exceptions\CommandNotFoundException;
 use Dimtrovich\Console\Exceptions\InvalidCommandException;
-use BlitzPHP\Contracts\Container\ContainerInterface;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
@@ -18,8 +27,6 @@ use function Ahc\Cli\t;
 
 /**
  * Core console application.
- *
- * @package Dimtrovich\Console
  */
 class Console extends Application
 {
@@ -28,28 +35,28 @@ class Console extends Application
      */
     protected ?ContainerInterface $container = null;
 
-	/**
-	 * Logger configuration.
-	 *
-	 * @var array{instance: LoggerInterface|null, prefix: string}
-	 */
-	protected array $logger = ['instance' => null, 'prefix' => ''];
+    /**
+     * Logger configuration.
+     *
+     * @var array{instance: LoggerInterface|null, prefix: string}
+     */
+    protected array $logger = ['instance' => null, 'prefix' => ''];
 
-	/**
-	 * @var array<string, callable>
-	 */
-	protected array $hooks = [];
+    /**
+     * @var array<string, callable>
+     */
+    protected array $hooks = [];
 
     /**
      * Flags
-	 *
-	 * @var array<string, bool>
+     *
+     * @var array<string, bool>
      */
     protected array $flags = [
-		'debug'  => false,
-		'header' => true,
-		'footer' => false,
-	];
+        'debug'  => false,
+        'header' => true,
+        'footer' => false,
+    ];
 
     /**
      * Header title.
@@ -60,37 +67,37 @@ class Console extends Application
      * Registered commands.
      *
      * @var array<string, array{
-	 *      'action' => callable,}>
-	 *      'name'   => string,
-	 *      'alias'  => string,
-	 * }>
-	 *
-	 * @example [
-	 *     'App\Console\Commands\ExampleCommand' => [
-	 *         'action' => callable,
-	 *         'name'   => 'example:command',
-	 *         'alias'  => 'ex:cmd'
-	 *     ],
+     *      'action' => callable,}>
+     *      'name'   => string,
+     *      'alias'  => string,
+     * }>
+     *
+     * @example [
+     *     'App\Console\Commands\ExampleCommand' => [
+     *         'action' => callable,
+     *         'name'   => 'example:command',
+     *         'alias'  => 'ex:cmd'
+     *     ],
      */
     protected array $_commands = [];
 
-	/**
-	 * Command cache for quick retrieval by name or alias.
-	 *
-	 * @var array<string, array>
-	 */
-	protected array $commandCached = [];
+    /**
+     * Command cache for quick retrieval by name or alias.
+     *
+     * @var array<string, array>
+     */
+    protected array $commandCached = [];
 
-	/**
-	 * Cache of executed command outputs.
-	 *
-	 * Keys are generated from command name, arguments and options.
-	 * Values are the captured stdout/stderr of the commands.
-	 * This cache prevents re-executing the same command with identical parameters.
-	 *
-	 * @var array<string, string>
-	 */
-	protected array $commandOutputCache = [];
+    /**
+     * Cache of executed command outputs.
+     *
+     * Keys are generated from command name, arguments and options.
+     * Values are the captured stdout/stderr of the commands.
+     * This cache prevents re-executing the same command with identical parameters.
+     *
+     * @var array<string, string>
+     */
+    protected array $commandOutputCache = [];
 
     /**
      * Create a new console application.
@@ -103,7 +110,7 @@ class Console extends Application
         parent::__construct($name, $version);
 
         $this->onException([$this, 'onError']);
-	}
+    }
 
     /**
      * Set the container instance.
@@ -115,61 +122,61 @@ class Console extends Application
         return $this;
     }
 
-	/**
-	 * Set the PSR logger instance for the application.
-	 *
-	 * This method configures the PSR-3 logger that will be used by all commands
-	 * through the `$this->log()` method. It also sets up the Logger component
-	 * with the console writer and default prefix.
-	 *
-	 * @param LoggerInterface $logger The PSR-3 logger instance
-	 * @param string          $prefix Optional default prefix for all log messages
-	 *                                (e.g., 'APP' will produce '[APP] Message')
-	 *
-	 * @return self The current instance for method chaining
-	 *
-	 * @example
-	 * ```php
-	 * $console->setLogger($monologLogger, 'APP');
-	 * ```
-	 *
-	 * @see \Dimtrovich\Console\Components\Logger::configure()
-	 */
-	public function setLogger(LoggerInterface $logger, string $prefix = ''): self
-	{
-		$this->logger['instance'] = $logger;
-		$this->logger['prefix'] = $prefix;
+    /**
+     * Set the PSR logger instance for the application.
+     *
+     * This method configures the PSR-3 logger that will be used by all commands
+     * through the `$this->log()` method. It also sets up the Logger component
+     * with the console writer and default prefix.
+     *
+     * @param LoggerInterface $logger The PSR-3 logger instance
+     * @param string          $prefix Optional default prefix for all log messages
+     *                                (e.g., 'APP' will produce '[APP] Message')
+     *
+     * @return self The current instance for method chaining
+     *
+     * @example
+     * ```php
+     * $console->setLogger($monologLogger, 'APP');
+     * ```
+     *
+     * @see \Dimtrovich\Console\Components\Logger::configure()
+     */
+    public function setLogger(LoggerInterface $logger, string $prefix = ''): self
+    {
+        $this->logger['instance'] = $logger;
+        $this->logger['prefix']   = $prefix;
 
-		Logger::configure($this->io()->writer(), $logger, $prefix);
+        Logger::configure($this->io()->writer(), $logger, $prefix);
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set a hook callback.
-	 *
-	 * @param string   $hook Hook name ('before' or 'after')
-	 * @param callable $fn   Callback function
-	 */
-	public function setHook(string $hook, callable $fn): self
-	{
-		$this->hooks[$hook] = $fn;
+    /**
+     * Set a hook callback.
+     *
+     * @param string   $hook Hook name ('before' or 'after')
+     * @param callable $fn   Callback function
+     */
+    public function setHook(string $hook, callable $fn): self
+    {
+        $this->hooks[$hook] = $fn;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set a flag value.
-	 *
-	 * @param string $flag  Flag name
-	 * @param bool   $value Flag value
-	 */
-	public function setFlag(string $flag, bool $value): self
-	{
-		$this->flags[$flag] = $value;
+    /**
+     * Set a flag value.
+     *
+     * @param string $flag  Flag name
+     * @param bool   $value Flag value
+     */
+    public function setFlag(string $flag, bool $value): self
+    {
+        $this->flags[$flag] = $value;
 
-		return $this;
-	}
+        return $this;
+    }
 
     /**
      * Set the header title.
@@ -184,9 +191,9 @@ class Console extends Application
     /**
      * Call a registered command.
      *
-     * @param string                $commandName Command name
-     * @param array<string, mixed>  $arguments   Command arguments
-     * @param array<string, mixed>  $options     Command options
+     * @param string               $commandName Command name
+     * @param array<string, mixed> $arguments   Command arguments
+     * @param array<string, mixed> $options     Command options
      *
      * @return mixed Command execution result
      *
@@ -194,24 +201,24 @@ class Console extends Application
      */
     public function call(string $commandName, array $arguments = [], array $options = []): mixed
     {
-		$command = $this->retrieveCommand($commandName);
-		$action  = $command['action'] ?? null;
+        $command = $this->retrieveCommand($commandName);
+        $action  = $command['action'] ?? null;
 
         if ($action === null) {
-			if (str_contains($commandName, '\\')) {
-				$availables = array_keys($this->_commands);
-			} else {
-				$availables = array_map(fn($cmd) => $cmd['name'], $this->_commands);
-			}
+            if (str_contains($commandName, '\\')) {
+                $availables = array_keys($this->_commands);
+            } else {
+                $availables = array_map(fn ($cmd) => $cmd['name'], $this->_commands);
+            }
 
-			$this->outputHelper()->showCommandNotFound($commandName, $availables);
+            $this->outputHelper()->showCommandNotFound($commandName, $availables);
 
             return ($this->onExit)(127);
         }
 
         foreach ($options as $key => $value) {
             $key = preg_replace('/^\-\-/', '', $key);
-            if (!isset($options[$key])) {
+            if (! isset($options[$key])) {
                 $options[$key] = $value;
             }
         }
@@ -219,15 +226,15 @@ class Console extends Application
         return $action($arguments, $options, true);
     }
 
-	/**
+    /**
      * Call a command silently (without output).
      *
      * This method executes a command and suppresses all output.
      * Useful for calling commands programmatically within other commands.
      *
-     * @param string                $command   Command name or FQCN
-     * @param array<string, mixed>  $arguments Command arguments
-     * @param array<string, mixed>  $options   Command options
+     * @param string               $command   Command name or FQCN
+     * @param array<string, mixed> $arguments Command arguments
+     * @param array<string, mixed> $options   Command options
      *
      * @return mixed Command execution result
      *
@@ -249,44 +256,45 @@ class Console extends Application
         try {
             $result = $this->call($command, $arguments, $options);
 
-			$key = $this->generateCacheKey($command, $arguments, $options);
+            $key = $this->generateCacheKey($command, $arguments, $options);
 
             // Get buffered output
-			$this->commandOutputCache[$key] = ob_get_clean() ?: '';
+            $this->commandOutputCache[$key] = ob_get_clean() ?: '';
 
-			return $result;
+            return $result;
         } catch (Throwable $e) {
             // Clean buffer on error
             ob_end_clean();
+
             throw $e;
         }
     }
 
-	/**
-	 * Capture the output of a command execution.
-	 * This method executes a command and returns its output as a string.
-	 * Useful for capturing output of commands when called programmatically.
-	 * Note: This method will execute the command only once per unique set of arguments and options,
-	 * and cache the output for subsequent calls with the same parameters.
-	 *
-	 * Example usage:
-	 * ```php
-	 * // Capture output of a command
-	 * $output = $app->captureOutput('list:users', ['--active' => true]);
-	 * echo $output;
-	 * ```
-	 *
-	 * @param string                $command   Command name or FQCN
-	 * @param array<string, mixed>  $arguments Command arguments
-	 * @param array<string, mixed>  $options   Command options
-	 *
-	 * @return string Captured output from the command execution
-	 *
-	 * @throws CommandNotFoundException If command doesn't exist
-	 */
-	public function captureOutput(string $command, array $arguments = [], array $options = []): string
-	{
-		$key = $this->generateCacheKey($command, $arguments, $options);
+    /**
+     * Capture the output of a command execution.
+     * This method executes a command and returns its output as a string.
+     * Useful for capturing output of commands when called programmatically.
+     * Note: This method will execute the command only once per unique set of arguments and options,
+     * and cache the output for subsequent calls with the same parameters.
+     *
+     * Example usage:
+     * ```php
+     * // Capture output of a command
+     * $output = $app->captureOutput('list:users', ['--active' => true]);
+     * echo $output;
+     * ```
+     *
+     * @param string               $command   Command name or FQCN
+     * @param array<string, mixed> $arguments Command arguments
+     * @param array<string, mixed> $options   Command options
+     *
+     * @return string Captured output from the command execution
+     *
+     * @throws CommandNotFoundException If command doesn't exist
+     */
+    public function captureOutput(string $command, array $arguments = [], array $options = []): string
+    {
+        $key = $this->generateCacheKey($command, $arguments, $options);
 
         if (isset($this->commandOutputCache[$key])) {
             return $this->commandOutputCache[$key];
@@ -295,45 +303,45 @@ class Console extends Application
         $this->callSilent($command, $arguments, $options);
 
         return $this->commandOutputCache[$key] ?? '';
-	}
+    }
 
-	/**
-	 * Clear command output cache.
-	 *
-	 * @param string|null $command Specific command name to clear (null = clear all)
-	 */
-	public function clearOutputCache(?string $command = null): self
-	{
-		if ($command === null) {
-			$this->commandOutputCache = [];
+    /**
+     * Clear command output cache.
+     *
+     * @param string|null $command Specific command name to clear (null = clear all)
+     */
+    public function clearOutputCache(?string $command = null): self
+    {
+        if ($command === null) {
+            $this->commandOutputCache = [];
 
-			return $this;
-		}
+            return $this;
+        }
 
-		foreach (array_keys($this->commandOutputCache) as $key) {
-			if (str_starts_with($key, md5($command))) {
-				unset($this->commandOutputCache[$key]);
-			}
-		}
+        foreach (array_keys($this->commandOutputCache) as $key) {
+            if (str_starts_with($key, md5($command))) {
+                unset($this->commandOutputCache[$key]);
+            }
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Check if a command has already been executed with these parameters.
-	 *
-	 * @param string                $command   Command name or FQCN
-	 * @param array<string, mixed>  $arguments Command arguments
-	 * @param array<string, mixed>  $options   Command options
-	 *
-	 * @return bool True if command has already been executed
-	 */
-	public function hasExecuted(string $command, array $arguments = [], array $options = []): bool
-	{
-		$key = $this->generateCacheKey($command, $arguments, $options);
+    /**
+     * Check if a command has already been executed with these parameters.
+     *
+     * @param string               $command   Command name or FQCN
+     * @param array<string, mixed> $arguments Command arguments
+     * @param array<string, mixed> $options   Command options
+     *
+     * @return bool True if command has already been executed
+     */
+    public function hasExecuted(string $command, array $arguments = [], array $options = []): bool
+    {
+        $key = $this->generateCacheKey($command, $arguments, $options);
 
-		return isset($this->commandOutputCache[$key]);
-	}
+        return isset($this->commandOutputCache[$key]);
+    }
 
     /**
      * Check if a command exists in the registered commands list.
@@ -344,9 +352,9 @@ class Console extends Application
      */
     public function commandExists(string $commandName): bool
     {
-		$command = $this->retrieveCommand($commandName);
+        $command = $this->retrieveCommand($commandName);
 
-        return !empty($command) && is_callable($command['action']);
+        return ! empty($command) && is_callable($command['action']);
     }
 
     /**
@@ -360,7 +368,7 @@ class Console extends Application
     {
         $class = new ReflectionClass($className);
 
-        if (!$class->isInstantiable() || !$class->isSubclassOf(Command::class)) {
+        if (! $class->isInstantiable() || ! $class->isSubclassOf(Command::class)) {
             throw new InvalidCommandException($className);
         }
 
@@ -375,7 +383,7 @@ class Console extends Application
 
             $parameters = $command->values();
             $arguments  = $arguments === [] || $arguments === null ? $command->args() : $arguments;
-            $options    = $options === [] || $options === null ? array_diff_key($parameters, $arguments) : $options;
+            $options    = $options === []   || $options === null ? array_diff_key($parameters, $arguments) : $options;
             $parameters = array_merge($options, $arguments);
 
             $instance->setParameters($arguments, $options);
@@ -391,10 +399,10 @@ class Console extends Application
             return $result;
         };
 
-		$this->_commands[$className] = [
-			'action' => $action,
-			'name'   => $instance->name(),
-			'alias'  => $instance->alias(),
+        $this->_commands[$className] = [
+            'action' => $action,
+            'name'   => $instance->name(),
+            'alias'  => $instance->alias(),
         ];
 
         $this->add($command->action($action));
@@ -408,9 +416,9 @@ class Console extends Application
      */
     protected function before(bool $suppress, Command $command): void
     {
-		if (isset($this->hooks['before'])) {
-			call_user_func($this->hooks['before'], $suppress, $command);
-		}
+        if (isset($this->hooks['before'])) {
+            ($this->hooks['before'])($suppress, $command);
+        }
     }
 
     /**
@@ -421,9 +429,9 @@ class Console extends Application
      */
     protected function after(bool $suppress, Command $command): void
     {
-		if (isset($this->hooks['after'])) {
-			call_user_func($this->hooks['after'], $suppress, $command);
-		}
+        if (isset($this->hooks['after'])) {
+            ($this->hooks['after'])($suppress, $command);
+        }
     }
 
     /**
@@ -452,11 +460,11 @@ class Console extends Application
     {
         $writer = $this->io()->writer();
 
-        $header = !$this->flags['header'] ? '' : (
+        $header = ! $this->flags['header'] ? '' : (
             $this->headtitle ? "\n{$this->headtitle}" : "\n{$this->name}, " . t('version') . " {$this->version}"
         );
 
-        $footer = !$this->flags['footer'] ? '' : t('Run `<command> --help` for specific help');
+        $footer = ! $this->flags['footer'] ? '' : t('Run `<command> --help` for specific help');
 
         if ($this->logo) {
             $writer->logo($this->logo, true);
@@ -467,82 +475,82 @@ class Console extends Application
         return ($this->onExit)();
     }
 
-	/**
+    /**
      * Set the default command.
      *
      * @param string $commandName The name or FQCN of the default command
      *
      * @throws InvalidArgumentException If the specified command name does not exist
-	 *
-	 * @override
+     *
+     * @override
      */
     public function defaultCommand(string $commandName): self
     {
-		$command = $this->retrieveCommand($commandName);
+        $command = $this->retrieveCommand($commandName);
 
-		if (null === $command) {
-			throw new InvalidArgumentException(t('Command "%s" does not exist', [$commandName]));
-		}
+        if (null === $command) {
+            throw new InvalidArgumentException(t('Command "%s" does not exist', [$commandName]));
+        }
 
-		parent::defaultCommand($commandName);
+        parent::defaultCommand($commandName);
 
         return $this;
     }
 
-	/**
-	 * Define the callable to perform exit
-	 */
-	public function onExit(callable $fn): self
-	{
-		$this->onExit = $fn;
+    /**
+     * Define the callable to perform exit
+     */
+    public function onExit(callable $fn): self
+    {
+        $this->onExit = $fn;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Retrieve a registered command by name or alias.
-	 *
-	 * @param string $name Command name or alias
-	 *
-	 * @return array{action: callable, name: string, alias: string}|null Command data if found, null otherwise
-	 */
-	private function retrieveCommand(string $name): ?array
-	{
-		if ($name === '') {
-			return null;
-		}
+    /**
+     * Retrieve a registered command by name or alias.
+     *
+     * @param string $name Command name or alias
+     *
+     * @return array{action: callable, name: string, alias: string}|null Command data if found, null otherwise
+     */
+    private function retrieveCommand(string $name): ?array
+    {
+        if ($name === '') {
+            return null;
+        }
 
-		if (array_key_exists($name, $this->commandCached)) {
-			return $this->commandCached[$name];
-		}
+        if (array_key_exists($name, $this->commandCached)) {
+            return $this->commandCached[$name];
+        }
 
-		foreach ($this->_commands as $classname => $command) {
-			if (in_array($name, [$classname, $command['name'], $command['alias']], true)) {
-				return $this->commandCached[$name] = $command;
-			}
-		}
+        foreach ($this->_commands as $classname => $command) {
+            if (in_array($name, [$classname, $command['name'], $command['alias']], true)) {
+                return $this->commandCached[$name] = $command;
+            }
+        }
 
-		return $this->commandCached[$name] = null;
-	}
+        return $this->commandCached[$name] = null;
+    }
 
-	/**
-	 * Generate a unique cache key for a command execution.
-	 *
-	 * @param string                $command   Command name or FQCN
-	 * @param array<string, mixed>  $arguments Command arguments
-	 * @param array<string, mixed>  $options   Command options
-	 *
-	 * @return string Unique cache key
-	 */
-	private function generateCacheKey(string $command, array $arguments = [], array $options = []): string
-	{
-		ksort($arguments);
-		ksort($options);
+    /**
+     * Generate a unique cache key for a command execution.
+     *
+     * @param string               $command   Command name or FQCN
+     * @param array<string, mixed> $arguments Command arguments
+     * @param array<string, mixed> $options   Command options
+     *
+     * @return string Unique cache key
+     */
+    private function generateCacheKey(string $command, array $arguments = [], array $options = []): string
+    {
+        ksort($arguments);
+        ksort($options);
 
-		return md5(serialize([
-			'command'   => $command,
-			'arguments' => $arguments,
-			'options'   => $options,
-		]));
-	}
+        return md5(serialize([
+            'command'   => $command,
+            'arguments' => $arguments,
+            'options'   => $options,
+        ]));
+    }
 }
