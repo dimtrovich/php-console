@@ -16,16 +16,12 @@ use Exception;
 class Badge
 {
 	use IconTrait;
+	use SingletonTrait;
 
     /**
      * Writer instance.
      */
     private Writer $writer;
-
-    /**
-     * Singleton instance.
-     */
-    private static ?self $instance = null;
 
     /**
      * Create a new badge instance.
@@ -35,18 +31,6 @@ class Badge
     public function __construct(Writer $writer)
     {
         $this->writer = $writer;
-    }
-
-    /**
-     * Get the singleton instance of Badge.
-     */
-    public static function instance(Writer $writer): static
-    {
-        if (self::$instance === null) {
-            self::$instance = new static($writer);
-        }
-
-        return self::$instance;
     }
 
     /**

@@ -15,16 +15,12 @@ use BlitzPHP\Console\Icon;
 class Alert
 {
 	use IconTrait;
+	use SingletonTrait;
 
     /**
      * Writer instance.
      */
     private Writer $writer;
-
-    /**
-     * Singleton instance.
-     */
-    private static ?self $instance = null;
 
     /**
      * Create a new alert instance.
@@ -34,18 +30,6 @@ class Alert
     public function __construct(Writer $writer)
     {
         $this->writer = $writer;
-    }
-
-    /**
-     * Get the singleton instance of Alert.
-     */
-    public static function instance(Writer $writer): static
-    {
-        if (self::$instance === null) {
-            self::$instance = new static($writer);
-        }
-
-        return self::$instance;
     }
 
     /**

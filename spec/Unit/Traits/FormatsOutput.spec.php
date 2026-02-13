@@ -97,6 +97,13 @@ describe('Traits / FormatsOutput', function () {
             $this->formatter->comment('Comment');
         });
 
+        it('writes ok message', function () {
+            expect($this->writer)->toReceive('ok')->with('Ok')->once();
+            expect($this->writer)->toReceive('eol')->once();
+
+            $this->formatter->ok('Ok');
+        });
+
         it('writes question message', function () {
             expect($this->writer)->toReceive('question')->with('Question?')->once();
             expect($this->writer)->toReceive('eol')->once();
@@ -229,6 +236,104 @@ describe('Traits / FormatsOutput', function () {
             expect($this->writer)->toReceive('colors')->with(Arg::toContain('*'))->times(3);
 
             $this->formatter->alertMessage('System will restart');
+        });
+    });
+
+	describe('color methods with eol', function () {
+
+        it('writes red with eol', function () {
+            expect($this->writer)->toReceive('colors')->with('<red>Red text</end><eol>')->once();
+
+            $this->formatter->red('Red text', true);
+        });
+
+        it('writes green with eol', function () {
+            expect($this->writer)->toReceive('colors')->with('<green>Green text</end><eol>')->once();
+
+            $this->formatter->green('Green text', true);
+        });
+
+        it('writes blue with eol', function () {
+            expect($this->writer)->toReceive('colors')->with('<blue>Blue text</end><eol>')->once();
+
+            $this->formatter->blue('Blue text', true);
+        });
+    });
+
+    describe('write and eol methods', function () {
+
+        it('writes text without eol', function () {
+            expect($this->writer)->toReceive('write')->with('Text', false)->once();
+
+            $this->formatter->write('Text');
+        });
+
+        it('writes text with eol', function () {
+            expect($this->writer)->toReceive('write')->with('Text', true)->once();
+
+            $this->formatter->write('Text', true);
+        });
+
+        it('adds multiple end of lines', function () {
+            expect($this->writer)->toReceive('eol')->with(3)->once();
+
+            $this->formatter->eol(3);
+        });
+
+        it('adds new line', function () {
+            expect($this->writer)->toReceive('eol')->with(1)->once();
+
+            $this->formatter->newLine();
+        });
+    });
+
+    describe('list edge cases', function () {
+
+        it('handles empty bullet list', function () {
+            expect($this->writer)->not->toReceive('write')->with(Arg::toContain('•'));
+
+            $this->formatter->bulletList([]);
+        });
+
+        it('handles bullet list with title only', function () {
+            expect($this->writer)->toReceive('colors')->with('<yellow>Title:</end>')->once();
+
+            $this->formatter->bulletList([], 'Title:');
+        });
+
+        it('handles empty numbered list', function () {
+            expect($this->writer)->not->toReceive('colors')->with(Arg::toContain('<green>'));
+
+            $this->formatter->numberedList([]);
+        });
+
+        it('handles numbered list with custom title color', function () {
+            expect($this->writer)->toReceive('colors')->with('<blue>Numbers:</end>')->once();
+
+            $this->formatter->numberedList(['One'], 'Numbers:', 'blue');
+        });
+    });
+
+    describe('alert message edge cases', function () {
+
+        it('handles empty message', function () {
+            expect($this->writer)->toReceive('colors')->times(3);
+
+            $this->formatter->alertMessage('');
+        });
+
+        it('handles very long message', function () {
+            $long = str_repeat('X', 100);
+
+            expect($this->writer)->toReceive('colors')->times(3);
+
+            $this->formatter->alertMessage($long);
+        });
+
+        it('uses custom color', function () {
+            expect($this->writer)->toReceive('colors')->with(Arg::toContain('<red>'))->times(3);
+
+            $this->formatter->alertMessage('Message', 'red');
         });
     });
 });

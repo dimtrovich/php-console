@@ -5,8 +5,12 @@ use BlitzPHP\Console\Overrides\Cursor;
 use BlitzPHP\Console\Traits\InteractsWithOutput;
 use BlitzPHP\Console\Components\Alert;
 use BlitzPHP\Console\Components\Badge;
+use BlitzPHP\Console\Components\Logger;
 use BlitzPHP\Console\Components\ProgressBar;
 use Kahlan\Arg;
+use Kahlan\Plugin\Double;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 use function Kahlan\expect;
 
@@ -211,4 +215,67 @@ describe('Traits / InteractsWithOutput', function () {
             $this->output->center('Centered');
         });
 	});
+
+	describe('log method', function () {
+		beforeEach(function () {
+			$this->psrLogger = Double::instance(['implements' => [LoggerInterface::class]]);
+
+			Logger::setLogger($this->psrLogger, 'TEST');
+		});
+
+        it('returns Logger instance', function () {
+            $logger = $this->output->log();
+
+            expect($logger)->toBeAnInstanceOf(Logger::class);
+        });
+
+        it('returns logger with default prefix', function () {
+            $logger = $this->output->log();
+
+            expect($logger->prefix())->toBe('TEST');
+        });
+
+        it('returns logger with custom prefix', function () {
+            $logger = $this->output->log('CUSTOM');
+
+            expect($logger->prefix())->toBe('CUSTOM');
+        });
+
+        it('returns new instance for different prefix', function () {
+            $logger1 = $this->output->log('DB');
+            $logger2 = $this->output->log('CACHE');
+
+            expect($logger1)->not->toBe($logger2);
+        });
+
+        it('returns same instance if we use global prefix', function () {
+            $logger1 = $this->output->log();
+            $logger2 = $this->output->log();
+
+			expect($logger1)->toBe($logger2);
+        });
+
+        it('throws exception when no logger configured', function () {
+            // Reinitialise
+            $reflection = new ReflectionClass(Logger::class);
+            $loggerProp = $reflection->getProperty('logger');
+            $loggerProp->setAccessible(true);
+            $loggerProp->setValue(null, null);
+
+            expect(function () {
+                $this->output->log();
+            })->toThrow(new RuntimeException('No PSR logger configured. Use $app->withLogger() to set one.'));
+        });
+
+        it('logs through the returned instance', function () {
+			$this->output->log()->resetInstance();
+
+            allow($this->psrLogger)->toReceive('log')->with(LogLevel::INFO, '[TEST] Message', []);
+
+            expect($this->writer)->toReceive('boldWhiteBgBlue')->once();
+            expect($this->writer)->toReceive('write')->with(' Message', true)->once();
+
+            $this->output->log()->info('Message');
+        });
+    });
 });

@@ -240,6 +240,20 @@ trait AsciiArt
         return $this;
     }
 
+	/**
+     * unegister a custom ASCII art font.
+     *
+     * @param string $name        Font name
+     *
+     * @return self
+     */
+	public function unregisterFont(string $name): self
+	{
+		unset(static::$asciiFonts[$name]);
+
+		return $this;
+	}
+
     /**
      * Load fonts from a directory.
      *

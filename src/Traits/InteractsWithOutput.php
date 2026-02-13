@@ -86,7 +86,7 @@ trait InteractsWithOutput
 		$logger = Logger::instance($this->writer);
 
 		if ($prefix !== '' && $prefix !== $logger->prefix()) {
-			return $logger->withPrefix($prefix);
+			return new Logger($this->writer, $prefix);
 		}
 
 		return $logger;

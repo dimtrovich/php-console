@@ -282,6 +282,10 @@ trait AdvancedFeatures
 	 */
     public function heatmap(array $data, array $colors = ['░', '▒', '▓', '█']): self
     {
+		if ($data  === []) {
+			return $this;
+		}
+
         $max = max($data);
         $min = min($data);
         $range = $max - $min;
@@ -367,6 +371,10 @@ trait AdvancedFeatures
 	 */
     public function chart(array $data, string $type = 'bar', int $height = 10): self
     {
+		if ($data === []) {
+			return $this;
+		}
+
         $max = max($data);
 
         if ($type === 'bar') {

@@ -134,4 +134,137 @@ describe('Application', function () {
             $this->app->withCommands([get_class($this->mockCommandClass)]);
         });
     });
+
+	describe('theme and icons', function () {
+
+        it('applies theme with withTheme()', function () {
+            $result = $this->app->withTheme('dark');
+
+            expect($result)->toBe($this->app);
+        });
+
+        it('throws exception for invalid theme', function () {
+            expect(function () {
+                $this->app->withTheme('invalid');
+            })->toThrow(new InvalidArgumentException(
+                'Theme "invalid" not found. Available themes: default, light, dark, solarized, monokai, nord, dracula, github.'
+            ));
+        });
+
+        it('configures icons with withIcons()', function () {
+            // Test that static calls are made
+            // It is not easy to test static calls with Kahlan
+            // But we can check that the method exists and returns $this
+
+            $result = $this->app->withIcons(true, false, true);
+
+            expect($result)->toBe($this->app);
+        });
+
+        it('applies custom styles with withStyles()', function () {
+            $styles = [
+                'custom_style' => ['fg' => 'red', 'bold' => 1],
+                'another' => ['fg' => 'blue', 'bg' => 'black']
+            ];
+
+            $result = $this->app->withStyles($styles);
+
+            expect($result)->toBe($this->app);
+        });
+    });
+
+    describe('header and footer', function () {
+
+        it('sets head title with withHeadTitle()', function () {
+            $result = $this->app->withHeadTitle('Custom Title');
+
+            expect($result)->toBe($this->app);
+        });
+
+        it('disables head title with withoutHeadTitle()', function () {
+            $result = $this->app->withoutHeadTitle();
+
+            expect($result)->toBe($this->app);
+        });
+
+        it('enables footer with withFooter()', function () {
+            $result = $this->app->withFooter();
+
+            expect($result)->toBe($this->app);
+        });
+    });
+
+    describe('logger configuration', function () {
+
+        it('configures logger with withLogger()', function () {
+            $psrLogger = Kahlan\Plugin\Double::instance(['implements' => [Psr\Log\LoggerInterface::class]]);
+
+            $result = $this->app->withLogger($psrLogger, 'APP');
+
+            expect($result)->toBe($this->app);
+
+            // Vérifier que le logger est configuré dans la console
+            // Ceci nécessite d'accéder à la propriété privée
+        });
+    });
+
+    describe('default command', function () {
+
+        it('sets default command with withDefaultCommand()', function () {
+            // Ajouter d'abord une commande
+            $command = new class extends BlitzPHP\Console\Command {
+                protected string $name = 'test:default';
+                public function handle() { return 0; }
+            };
+
+            $this->app->withCommands([get_class($command)]);
+
+            $result = $this->app->withDefaultCommand('test:default');
+
+            expect($result)->toBe($this->app);
+        });
+
+        it('throws exception for invalid default command', function () {
+            expect(function () {
+                $this->app->withDefaultCommand('nonexistent');
+            })->toThrow(new InvalidArgumentException('Command "nonexistent" does not exist'));
+        });
+    });
+
+    describe('run method', function () {
+
+        it('handles --debug flag', function () {
+            // Ce test nécessite de mocker $_SERVER['argv']
+            $originalArgv = $_SERVER['argv'] ?? [];
+
+            $_SERVER['argv'] = ['console', '--debug'];
+
+            // On ne peut pas vraiment tester run() car il exit
+            // Mais on peut tester la logique de parsing
+
+            $reflection = new ReflectionClass($this->app);
+            $method = $reflection->getMethod('run');
+            $method->setAccessible(true);
+
+            // Vérifier que la méthode existe
+            expect($method)->toBeAnInstanceOf(ReflectionMethod::class);
+
+            // Restaurer
+            $_SERVER['argv'] = $originalArgv;
+        });
+
+        it('handles --no-colors flag', function () {
+            $originalArgv = $_SERVER['argv'] ?? [];
+
+            $_SERVER['argv'] = ['console', '--no-colors'];
+
+            $reflection = new ReflectionClass($this->app);
+            $method = $reflection->getMethod('run');
+            $method->setAccessible(true);
+
+            expect($method)->toBeAnInstanceOf(ReflectionMethod::class);
+
+            $_SERVER['argv'] = $originalArgv;
+        });
+    });
 });

@@ -55,6 +55,7 @@ php_errors.log
 # Test Files
 #-------------------------
 tests/coverage*
+*.test
 
 # Don't save phpunit under version control.
 phpunit
@@ -108,3 +109,4 @@ nb-configuration.xml
 codeclimate.json
 coveralls.json
 clover.xml
+scrutinizer.xml

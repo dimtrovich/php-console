@@ -1,7 +1,7 @@
 <?php
-namespace BlitzPHP\Console\Components;
-
 declare(strict_types=1);
+
+namespace BlitzPHP\Console\Components;
 
 
 use Ahc\Cli\Output\Writer;
@@ -29,6 +29,7 @@ class Logger implements LoggerInterface
 {
 	use IconTrait;
     use LoggerTrait;
+	use SingletonTrait;
 
     /**
      * Mapping between console methods and PSR log levels.
@@ -57,17 +58,12 @@ class Logger implements LoggerInterface
     /**
      * PSR logger instance.
      */
-    protected static LoggerInterface $logger;
+    protected static ?LoggerInterface $logger;
 
 	/**
 	 * Default log prefix
 	 */
     protected static string $defaultPrefix = '';
-
-    /**
-     * Singleton instance.
-     */
-    private static ?self $instance = null;
 
     /**
      * Console writer instance.
@@ -89,18 +85,6 @@ class Logger implements LoggerInterface
     {
         $this->writer = $writer;
         $this->prefix = $prefix;
-    }
-
-	/**
-     * Get the singleton instance of Logger.
-     */
-    public static function instance(Writer $writer): static
-    {
-        if (self::$instance === null) {
-            self::$instance = new static($writer);
-        }
-
-        return self::$instance;
     }
 
 	/**
