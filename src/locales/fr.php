@@ -53,4 +53,5 @@ return [
     'Trying to set empty or invalid style'                     => 'Tentative de définir un style vide ou invalide',
 	'Invalid property: "%s"'								   => 'Propriété invalide : "%s"',
 	'Undefined method "%s" called.'							   => 'Méthode indéfinie "%s" appelée.',
+	'Theme "%1$s" not found. Available themes: %2$s.'		   => 'Thème "%1$s" introuvable. Thèmes disponibles : %2$s.',
 ];

@@ -5,8 +5,10 @@ namespace BlitzPHP\Console;
 use Ahc\Cli\Output\Color;
 use BlitzPHP\Console\Components\Alert;
 use BlitzPHP\Console\Components\Badge;
-use BlitzPHP\Console\Exceptions\InvalidCommandException;
 use BlitzPHP\Contracts\Container\ContainerInterface;
+use InvalidArgumentException;
+
+use function Ahc\Cli\t;
 
 /**
  * Application builder for console applications.
@@ -35,6 +37,22 @@ class Application
      */
     private Console $app;
 
+	/**
+     * Available built-in themes with descriptions.
+     *
+     * @var array<string, string>
+     */
+    public const AVAILABLE_THEMES = [
+        'default'   => 'Default theme - matches original adhocore/cli styling',
+        'light'     => 'Light theme - optimized for light terminal backgrounds',
+        'dark'      => 'Dark theme - optimized for dark terminal backgrounds',
+        'solarized' => 'Solarized theme - Ethan Schoonover\'s popular color scheme',
+        'monokai'   => 'Monokai theme - vibrant syntax highlighting theme',
+        'nord'      => 'Nord theme - arctic, north-bluish color palette',
+        'dracula'   => 'Dracula theme - dark theme with vibrant colors',
+        'github'    => 'GitHub theme - familiar GitHub interface colors',
+    ];
+
     /**
      * Create a new application builder instance.
      *
@@ -47,12 +65,7 @@ class Application
     {
         $this->app = new Console($name, $version);
 
-		static::defineBuilInStyles();
-
-        $this->defineColors('help_header|help_item_even|help_item_odd', ['fg' => Color::GREEN]);
-        $this->defineColors('help_group', ['fg' => Color::fg256(49)]);
-        $this->defineColors('help_category', ['fg' => Color::YELLOW]);
-        $this->defineColors('help_usage|help_description_even|help_description_odd|help_summary', ['fg' => Color::WHITE]);
+		$this->withTheme('default');
     }
 
     /**
@@ -89,9 +102,9 @@ class Application
      * exit($exitCode);
      * ```
      */
-    public function run(): mixed
+    public function run(array $argv = []): mixed
     {
-        $argv = $_SERVER['argv'];
+        $argv = $argv !== [] ? $argv : $_SERVER['argv'];
 
         if (in_array('--debug', $argv, true)) {
             $this->withDebug();
@@ -237,6 +250,71 @@ class Application
 
 		return $this;
 	}
+
+	/**
+     * Load a built-in or custom theme.
+     *
+     * This method loads a theme file from the themes directory and applies
+     * all its color styles, including both built-in adhocore/cli styles
+     * and BlitzPHP custom styles.
+     *
+     * @param string $theme The theme name (default, light, dark, solarized, monokai, nord, dracula, github)
+     *
+     * @return self The current instance
+     *
+     * @throws InvalidArgumentException If the theme file does not exist
+     *
+     * @example
+     * ```php
+     * $app->withTheme('dark');      // Use dark theme
+     * $app->withTheme('solarized'); // Use solarized theme
+     * $app->withTheme('custom');    // Load custom theme from themes/custom/custom.php
+     * ```
+     */
+    public function withTheme(string $theme): self
+    {
+		if (! file_exists($path = __DIR__ . "/themes/{$theme}.php")) {
+			throw new InvalidArgumentException(
+                t('Theme "%1$s" not found. Available themes: %2$s.',
+                    [$theme, implode(', ', array_keys(self::AVAILABLE_THEMES))]
+                )
+            );
+		}
+
+        $styles = require_once $path;
+
+        return $this->withStyles($styles);
+    }
+
+    /**
+     * Apply custom color styles directly.
+     *
+     * This method allows you to define custom color styles programmatically
+     * without creating a theme file. Styles are applied immediately and
+     * will override any previously defined styles with the same name.
+     *
+     * @param array<string, array{fg?: string|int, bg?: string|int, bold?: int}> $styles
+     *        Associative array where keys are style names and values are style definitions
+     *
+     * @return self The current instance
+     *
+     * @example
+     * ```php
+     * $app->withStyles([
+     *     'help_header' => ['fg' => Color::GREEN, 'bold' => 1],
+     *     'error'       => ['fg' => Color::RED, 'bg' => 'black'],
+     *     'custom_blue' => ['fg' => Color::fg256(69)],
+     * ]);
+     * ```
+     */
+    public function withStyles(array $styles): self
+    {
+        foreach ($styles as $name => $style) {
+            Color::style($name, $style);
+        }
+
+        return $this;
+    }
 
     /**
      * Set a header title for the help screen.
@@ -452,46 +530,5 @@ class Application
 		$this->app->defaultCommand($command);
 
 		return $this;
-	}
-
-    /**
-     * Define custom color styles for the console output.
-     *
-     * This method allows you to register custom color styles that can be used
-     * throughout your console application.
-     *
-     * @param string $names Pipe-separated list of style names
-     * @param array  $style Style definition (foreground, background, options)
-     *
-     * @return self The current instance
-     *
-     * @example
-     * ```php
-     * $this->defineColors('success_header|success_content', ['fg' => 'green', 'bg' => 'black']);
-     * $this->defineColors('error_banner', ['fg' => 'white', 'bg' => 'red', 'bold' => true]);
-     * ```
-     *
-     * @internal This method is used internally during initialization
-     */
-    private function defineColors(string $names, array $style): self
-    {
-        foreach (explode('|', $names) as $name) {
-            Color::style($name, $style);
-        }
-
-        return $this;
-    }
-
-	/**
-	 *
-	 */
-	public static function defineBuilInStyles()
-	{
-		Color::style('underline', ['bold' => 4]);
-		Color::style('italic', ['bold' => 3]);
-		Color::style('strike', ['bold' => 9]);
-
-		Color::style('magenta', ['fg' => Color::fg256(201)]);
-		Color::style('indigo', ['fg' => Color::fg256(54)]);
 	}
 }

@@ -2,14 +2,21 @@
 
 use BlitzPHP\Console\Traits\FormatsOutput;
 use Ahc\Cli\Output\Writer;
-use BlitzPHP\Console\Application;
+use Ahc\Cli\Output\Color;
 use Kahlan\Arg;
 
 describe('Traits / FormatsOutput', function () {
 	fileHook(
 		file: 'output-format.test',
 		beforeAll: function() {
-			Application::defineBuiltInStyles();
+			Color::style('underline', ['bold' => 4]);
+			Color::style('italic', ['bold' => 3]);
+			Color::style('strike', ['bold' => 9]);
+
+			Color::style('magenta', ['fg' => Color::fg256(201)]);
+			Color::style('indigo', ['fg' => Color::fg256(54)]);
+
+
 			$this->getFormatter = function($writer) {
 				$formatter = new class {
 					use FormatsOutput;
