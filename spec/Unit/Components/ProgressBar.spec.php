@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Ahc\Cli\Output\Writer;
 use Dimtrovich\Console\Components\ProgressBar;
 use Kahlan\Arg;
@@ -7,33 +16,31 @@ use Kahlan\Arg;
 use function Kahlan\expect;
 
 describe('ProgressBar', function () {
+    beforeAll(function () {
+        $this->outputFile = __DIR__ . '/../../output-progressbar.test';
 
-    beforeAll(function() {
-		$this->outputFile = __DIR__ . '/../../output-progressbar.test';
-
-		if (! is_dir($dirname = pathinfo($this->outputFile, PATHINFO_DIRNAME))) {
-			mkdir($dirname);
-		}
-		file_put_contents($this->outputFile, '', LOCK_EX);
-	});
-
-    beforeEach(function () {
-        $this->writer = new Writer($this->outputFile);
-		$this->progress = new ProgressBar(100, $this->writer);
+        if (! is_dir($dirname = pathinfo($this->outputFile, PATHINFO_DIRNAME))) {
+            mkdir($dirname);
+        }
+        file_put_contents($this->outputFile, '', LOCK_EX);
     });
 
-	afterEach(function() {
-		file_put_contents($this->outputFile, '', LOCK_EX);
-	});
+    beforeEach(function () {
+        $this->writer   = new Writer($this->outputFile);
+        $this->progress = new ProgressBar(100, $this->writer);
+    });
 
-	afterAll(function() {
-		if (file_exists($this->outputFile)) {
-			unlink($this->outputFile);
-		}
-	});
+    afterEach(function () {
+        file_put_contents($this->outputFile, '', LOCK_EX);
+    });
+
+    afterAll(function () {
+        if (file_exists($this->outputFile)) {
+            unlink($this->outputFile);
+        }
+    });
 
     describe('constructor', function () {
-
         it('initializes with total steps', function () {
             $progress = new ProgressBar(50, $this->writer);
 
@@ -42,7 +49,7 @@ describe('ProgressBar', function () {
 
         it('records start time', function () {
             $reflection = new ReflectionClass($this->progress);
-            $startTime = $reflection->getProperty('startTime');
+            $startTime  = $reflection->getProperty('startTime');
             $startTime->setAccessible(true);
 
             expect($startTime->getValue($this->progress))->toBeGreaterThan(0);
@@ -50,7 +57,6 @@ describe('ProgressBar', function () {
     });
 
     describe('advancement', function () {
-
         it('advances progress', function () {
             expect($this->writer)->toReceive('write')->times(2);
 
@@ -69,7 +75,7 @@ describe('ProgressBar', function () {
             $this->progress->advanceWithMessage(1, 'Processing item 1');
 
             $reflection = new ReflectionClass($this->progress);
-            $messages = $reflection->getProperty('messages');
+            $messages   = $reflection->getProperty('messages');
             $messages->setAccessible(true);
 
             expect($messages->getValue($this->progress))->toContain('Processing item 1');
@@ -77,7 +83,6 @@ describe('ProgressBar', function () {
     });
 
     describe('statistics', function () {
-
         it('shows statistics', function () {
             $this->progress->advance(25);
 
@@ -102,7 +107,7 @@ describe('ProgressBar', function () {
 
             // Mock microtime pour un test déterministe
             $reflection = new ReflectionClass($this->progress);
-            $startTime = $reflection->getProperty('startTime');
+            $startTime  = $reflection->getProperty('startTime');
             $startTime->setAccessible(true);
             $startTime->setValue($this->progress, microtime(true) - 5); // 5 secondes écoulées
 
@@ -113,7 +118,6 @@ describe('ProgressBar', function () {
     });
 
     describe('display', function () {
-
         it('displays progress bar with percentage', function () {
             $this->progress->advance(50);
 

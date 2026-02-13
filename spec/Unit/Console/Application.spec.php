@@ -1,20 +1,27 @@
 <?php
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
+use BlitzPHP\Contracts\Container\ContainerInterface;
 use Dimtrovich\Console\Application;
 use Dimtrovich\Console\Console;
-use BlitzPHP\Contracts\Container\ContainerInterface;
 use Kahlan\Plugin\Double;
 
 use function Kahlan\expect;
 
 describe('Application', function () {
-
     beforeEach(function () {
         $this->app = Application::create('Test App', '1.0.0');
     });
 
     describe('::create()', function () {
-
         it('creates a new application instance with fluent interface', function () {
             $app = Application::create('My CLI', '2.0.0');
 
@@ -23,7 +30,6 @@ describe('Application', function () {
     });
 
     describe('configuration methods', function () {
-
         it('configures locale with built-in translations', function () {
             $result = $this->app->withLocale('fr');
 
@@ -39,7 +45,7 @@ describe('Application', function () {
         });
 
         it('configures application logo', function () {
-            $logo = "  _   _   _   _  ";
+            $logo = '  _   _   _   _  ';
 
             $result = $this->app->withLogo($logo);
 
@@ -66,7 +72,6 @@ describe('Application', function () {
     });
 
     describe('error handling', function () {
-
         it('configures debug mode', function () {
             $result = $this->app->withDebug(true);
 
@@ -85,10 +90,9 @@ describe('Application', function () {
     });
 
     describe('hooks and container', function () {
-
         it('configures before/after hooks', function () {
             $before = function () {};
-            $after = function () {};
+            $after  = function () {};
 
             $result = $this->app->withHooks($before, $after);
 
@@ -105,7 +109,6 @@ describe('Application', function () {
     });
 
     describe('command registration', function () {
-
         it('registers multiple commands', function () {
             $commands = [
                 Tests\Fixtures\CommadOne::class,
@@ -119,14 +122,16 @@ describe('Application', function () {
     });
 
     describe('command execution', function () {
-
         beforeEach(function () {
             // Create a mock command for tests
-            $this->mockCommandClass = new class extends \Dimtrovich\Console\Command {
-                protected string $name = 'test:command';
+            $this->mockCommandClass = new class () extends Dimtrovich\Console\Command {
+                protected string $name        = 'test:command';
                 protected string $description = 'Test command';
-                public function handle() {
+
+                public function handle()
+                {
                     $this->writer->write('Command executed');
+
                     return 0;
                 }
             };
@@ -135,8 +140,7 @@ describe('Application', function () {
         });
     });
 
-	describe('theme and icons', function () {
-
+    describe('theme and icons', function () {
         it('applies theme with withTheme()', function () {
             $result = $this->app->withTheme('dark');
 
@@ -164,7 +168,7 @@ describe('Application', function () {
         it('applies custom styles with withStyles()', function () {
             $styles = [
                 'custom_style' => ['fg' => 'red', 'bold' => 1],
-                'another' => ['fg' => 'blue', 'bg' => 'black']
+                'another'      => ['fg' => 'blue', 'bg' => 'black'],
             ];
 
             $result = $this->app->withStyles($styles);
@@ -174,7 +178,6 @@ describe('Application', function () {
     });
 
     describe('header and footer', function () {
-
         it('sets head title with withHeadTitle()', function () {
             $result = $this->app->withHeadTitle('Custom Title');
 
@@ -195,9 +198,8 @@ describe('Application', function () {
     });
 
     describe('logger configuration', function () {
-
         it('configures logger with withLogger()', function () {
-            $psrLogger = Kahlan\Plugin\Double::instance(['implements' => [Psr\Log\LoggerInterface::class]]);
+            $psrLogger = Double::instance(['implements' => [Psr\Log\LoggerInterface::class]]);
 
             $result = $this->app->withLogger($psrLogger, 'APP');
 
@@ -209,12 +211,15 @@ describe('Application', function () {
     });
 
     describe('default command', function () {
-
         it('sets default command with withDefaultCommand()', function () {
             // Ajouter d'abord une commande
-            $command = new class extends Dimtrovich\Console\Command {
+            $command = new class () extends Dimtrovich\Console\Command {
                 protected string $name = 'test:default';
-                public function handle() { return 0; }
+
+                public function handle()
+                {
+                    return 0;
+                }
             };
 
             $this->app->withCommands([get_class($command)]);
@@ -232,7 +237,6 @@ describe('Application', function () {
     });
 
     describe('run method', function () {
-
         it('handles --debug flag', function () {
             // Ce test nécessite de mocker $_SERVER['argv']
             $originalArgv = $_SERVER['argv'] ?? [];
@@ -243,7 +247,7 @@ describe('Application', function () {
             // Mais on peut tester la logique de parsing
 
             $reflection = new ReflectionClass($this->app);
-            $method = $reflection->getMethod('run');
+            $method     = $reflection->getMethod('run');
             $method->setAccessible(true);
 
             // Vérifier que la méthode existe
@@ -259,7 +263,7 @@ describe('Application', function () {
             $_SERVER['argv'] = ['console', '--no-colors'];
 
             $reflection = new ReflectionClass($this->app);
-            $method = $reflection->getMethod('run');
+            $method     = $reflection->getMethod('run');
             $method->setAccessible(true);
 
             expect($method)->toBeAnInstanceOf(ReflectionMethod::class);

@@ -1,49 +1,58 @@
 <?php
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use function Kahlan\beforeAll;
 
 function callClosure(?Closure $closure, array $args = [])
 {
-	if ($closure) {
-		$closure(...$args);
-	}
+    if ($closure) {
+        $closure(...$args);
+    }
 }
 
-
-function fileHook(string|array $file, ?Closure $beforeAll = null, ?Closure $afterAll = null, ?Closure $beforeEach = null, ?Closure $afterEach = null)
+function fileHook(array|string $file, ?Closure $beforeAll = null, ?Closure $afterAll = null, ?Closure $beforeEach = null, ?Closure $afterEach = null)
 {
-	$files = (array) $file;
-	foreach ($files as &$file) {
-		$file = __DIR__ . '/' . trim($file, '/');
+    $files = (array) $file;
 
-		if (! is_dir($dirname = pathinfo($file, PATHINFO_DIRNAME))) {
-			mkdir($dirname);
-		}
-		file_put_contents($file, '', LOCK_EX);
-	}
+    foreach ($files as &$file) {
+        $file = __DIR__ . '/' . trim($file, '/');
 
-	beforeAll(function() use($files, $beforeAll) {
-		callClosure($beforeAll, [$files, ...func_get_args()]);
-	});
+        if (! is_dir($dirname = pathinfo($file, PATHINFO_DIRNAME))) {
+            mkdir($dirname);
+        }
+        file_put_contents($file, '', LOCK_EX);
+    }
 
-	beforeEach(function () use($files, $beforeEach) {
-		callClosure($beforeEach, [$files, ...func_get_args()]);
-	});
+    beforeAll(function () use ($files, $beforeAll) {
+        callClosure($beforeAll, [$files, ...func_get_args()]);
+    });
 
-	afterEach(function() use($files, $afterEach) {
-		foreach ($files as $file) {
-			file_put_contents($file, '', LOCK_EX);
-		}
+    beforeEach(function () use ($files, $beforeEach) {
+        callClosure($beforeEach, [$files, ...func_get_args()]);
+    });
 
-		callClosure($afterEach, [$files, ...func_get_args()]);
-	});
+    afterEach(function () use ($files, $afterEach) {
+        foreach ($files as $file) {
+            file_put_contents($file, '', LOCK_EX);
+        }
 
-	afterAll(function() use($files, $afterAll) {
-		foreach ($files as $file) {
-			if (file_exists($file)) {
-				unlink($file);
-			}
-		}
-		callClosure($afterAll, [$files, ...func_get_args()]);
-	});
+        callClosure($afterEach, [$files, ...func_get_args()]);
+    });
+
+    afterAll(function () use ($files, $afterAll) {
+        foreach ($files as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+        callClosure($afterAll, [$files, ...func_get_args()]);
+    });
 }

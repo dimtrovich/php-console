@@ -1,37 +1,45 @@
 <?php
 
-use Dimtrovich\Console\Components\Badge;
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Ahc\Cli\Output\Writer;
+use Dimtrovich\Console\Components\Badge;
 
 use function Kahlan\expect;
 
 describe('Badge', function () {
-    beforeAll(function() {
-		$this->outputFile = __DIR__ . '/../../output-badge.test';
+    beforeAll(function () {
+        $this->outputFile = __DIR__ . '/../../output-badge.test';
 
-		if (! is_dir($dirname = pathinfo($this->outputFile, PATHINFO_DIRNAME))) {
-			mkdir($dirname);
-		}
-		file_put_contents($this->outputFile, '', LOCK_EX);
-	});
+        if (! is_dir($dirname = pathinfo($this->outputFile, PATHINFO_DIRNAME))) {
+            mkdir($dirname);
+        }
+        file_put_contents($this->outputFile, '', LOCK_EX);
+    });
 
     beforeEach(function () {
         $this->writer = new Writer($this->outputFile);
-        $this->badge = new Badge($this->writer);
+        $this->badge  = new Badge($this->writer);
     });
 
-	afterEach(function() {
-		file_put_contents($this->outputFile, '', LOCK_EX);
-	});
+    afterEach(function () {
+        file_put_contents($this->outputFile, '', LOCK_EX);
+    });
 
-	afterAll(function() {
-		if (file_exists($this->outputFile)) {
-			unlink($this->outputFile);
-		}
-	});
+    afterAll(function () {
+        if (file_exists($this->outputFile)) {
+            unlink($this->outputFile);
+        }
+    });
 
     describe('::instance()', function () {
-
         it('creates a singleton instance', function () {
             $badge1 = Badge::instance($this->writer);
             $badge2 = Badge::instance($this->writer);
@@ -41,7 +49,6 @@ describe('Badge', function () {
     });
 
     describe('badge types', function () {
-
         it('displays info badge', function () {
             expect($this->writer)->toReceive('boldWhiteBgCyan')->once()->with(' INFO ');
             expect($this->writer)->toReceive('write')->once()->with(' Test message', true);
@@ -116,7 +123,6 @@ describe('Badge', function () {
     });
 
     describe('outline badge', function () {
-
         it('displays outline badge with default color', function () {
             expect($this->writer)->toReceive('boldBlue')->once()->with(' OUTLINE ');
             expect($this->writer)->toReceive('write')->once()->with(' Outline message');
@@ -173,7 +179,6 @@ describe('Badge', function () {
     });
 
     describe('pill badge', function () {
-
         it('displays pill badge with default color', function () {
             expect($this->writer)->toReceive('boldWhiteBgBlue')->once()->with('( PILL )');
             expect($this->writer)->toReceive('write')->once()->with(' Pill message', true);
@@ -231,7 +236,6 @@ describe('Badge', function () {
     });
 
     describe('fluent interface', function () {
-
         it('returns self for method chaining', function () {
             $result = $this->badge
                 ->info('Info')

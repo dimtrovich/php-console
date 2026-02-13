@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Traits;
 
 use InvalidArgumentException;
@@ -15,7 +24,6 @@ use function Ahc\Cli\t;
  * It's designed to be used optionally by commands that need decorative banners,
  * headers, or stylized text output.
  *
- * @package Dimtrovich\Console\Traits
  * @mixin \Dimtrovich\Console\Command
  *
  * @example
@@ -114,39 +122,39 @@ trait AsciiArt
             '9' => ' ██ ',
 
             // Ponctuation et symboles
-            ' ' => '    ',
-            '.' => '   ',
-            ',' => '   ',
-            '?' => '██  ',
-            '!' => '█   ',
-            ':' => '    ',
-            ';' => '    ',
-            '-' => '    ',
-            '_' => '    ',
-            '+' => '  █  ',
-            '=' => '     ',
-            '*' => '█ █ █',
-            '/' => '   █ ',
+            ' '  => '    ',
+            '.'  => '   ',
+            ','  => '   ',
+            '?'  => '██  ',
+            '!'  => '█   ',
+            ':'  => '    ',
+            ';'  => '    ',
+            '-'  => '    ',
+            '_'  => '    ',
+            '+'  => '  █  ',
+            '='  => '     ',
+            '*'  => '█ █ █',
+            '/'  => '   █ ',
             '\\' => '█   ',
-            '|' => '█   ',
-            '(' => ' █  ',
-            ')' => '  █ ',
-            '[' => '██  ',
-            ']' => '██  ',
-            '{' => ' █  ',
-            '}' => '  █ ',
-            '<' => '  █ ',
-            '>' => ' █  ',
-            '@' => ' ██ █',
-            '#' => '█ █ █',
-            '$' => '█ ██',
-            '%' => '█ █ █',
-            '^' => ' █  ',
-            '&' => ' ██ ',
-            '~' => '     ',
-            '`' => '█    ',
-            "'" => '█    ',
-            '"' => '█ █  ',
+            '|'  => '█   ',
+            '('  => ' █  ',
+            ')'  => '  █ ',
+            '['  => '██  ',
+            ']'  => '██  ',
+            '{'  => ' █  ',
+            '}'  => '  █ ',
+            '<'  => '  █ ',
+            '>'  => ' █  ',
+            '@'  => ' ██ █',
+            '#'  => '█ █ █',
+            '$'  => '█ ██',
+            '%'  => '█ █ █',
+            '^'  => ' █  ',
+            '&'  => ' ██ ',
+            '~'  => '     ',
+            '`'  => '█    ',
+            "'"  => '█    ',
+            '"'  => '█ █  ',
         ],
 
         // Minimal font (compact)
@@ -191,8 +199,6 @@ trait AsciiArt
      *
      * @param string $font Font name
      *
-     * @return self
-     *
      * @throws InvalidArgumentException If font doesn't exist
      *
      * @example
@@ -202,11 +208,11 @@ trait AsciiArt
      */
     public function withFont(string $font): self
     {
-        if (!isset(static::$asciiFonts[$font])) {
+        if (! isset(static::$asciiFonts[$font])) {
             throw new InvalidArgumentException(
                 t('ASCII font "%s" not found. Available fonts: %s', [
                     $font,
-                    implode(', ', array_keys(static::$asciiFonts))
+                    implode(', ', array_keys(static::$asciiFonts)),
                 ])
             );
         }
@@ -219,10 +225,8 @@ trait AsciiArt
     /**
      * Register a custom ASCII art font.
      *
-     * @param string $name        Font name
+     * @param string                $name       Font name
      * @param array<string, string> $characters Mapping of characters to their ASCII representation
-     *
-     * @return self
      *
      * @example
      * ```php
@@ -240,19 +244,17 @@ trait AsciiArt
         return $this;
     }
 
-	/**
+    /**
      * unegister a custom ASCII art font.
      *
-     * @param string $name        Font name
-     *
-     * @return self
+     * @param string $name Font name
      */
-	public function unregisterFont(string $name): self
-	{
-		unset(static::$asciiFonts[$name]);
+    public function unregisterFont(string $name): self
+    {
+        unset(static::$asciiFonts[$name]);
 
-		return $this;
-	}
+        return $this;
+    }
 
     /**
      * Load fonts from a directory.
@@ -272,7 +274,7 @@ trait AsciiArt
      */
     public function loadFonts(string $directory): int
     {
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             return 0;
         }
 
@@ -282,7 +284,7 @@ trait AsciiArt
         foreach ($files as $file) {
             $font = require $file;
             if (is_array($font)) {
-                $name = pathinfo($file, PATHINFO_FILENAME);
+                $name                      = pathinfo($file, PATHINFO_FILENAME);
                 static::$asciiFonts[$name] = $font;
                 $count++;
             }
@@ -294,7 +296,7 @@ trait AsciiArt
     /**
      * Get list of available fonts.
      *
-     * @return array<string> List of font names
+     * @return list<string> List of font names
      */
     public function getAvailableFonts(): array
     {
@@ -305,8 +307,6 @@ trait AsciiArt
      * Check if a font exists.
      *
      * @param string $name Font name
-     *
-     * @return bool
      */
     public function hasFont(string $name): bool
     {
@@ -320,8 +320,6 @@ trait AsciiArt
      *
      * @param string      $text Text to display
      * @param string|null $font Optional font name (uses current font if null)
-     *
-     * @return self
      *
      * @throws InvalidArgumentException If font doesn't exist
      *
@@ -341,18 +339,18 @@ trait AsciiArt
     {
         $fontName = $font ?? $this->currentAsciiFont;
 
-        if (!isset(static::$asciiFonts[$fontName])) {
+        if (! isset(static::$asciiFonts[$fontName])) {
             throw new InvalidArgumentException(
                 t('ASCII font "%s" not found. Available fonts: %s', [
                     $fontName,
-                    implode(', ', array_keys(static::$asciiFonts))
+                    implode(', ', array_keys(static::$asciiFonts)),
                 ])
             );
         }
 
         $fontData = static::$asciiFonts[$fontName];
-        $lines = [];
-        $chars = str_split($text);
+        $lines    = [];
+        $chars    = str_split($text);
 
         // Build each character
         foreach ($chars as $char) {
@@ -376,12 +374,10 @@ trait AsciiArt
      *
      * @param string $font   Font name
      * @param string $sample Sample text to render (default: alphabet)
-     *
-     * @return self
      */
     public function previewFont(string $font, string $sample = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'): self
     {
-        $this->colorize("Preview of font '$font':", 'yellow');
+        $this->colorize("Preview of font '{$font}':", 'yellow');
         $this->asciiArt($sample, $font);
         $this->newLine();
 
@@ -391,11 +387,9 @@ trait AsciiArt
     /**
      * Create a banner with decorative borders.
      *
-     * @param string $text  Banner text
-     * @param string $char  Border character
-     * @param string $font  Font for the text
-     *
-     * @return self
+     * @param string $text Banner text
+     * @param string $char Border character
+     * @param string $font Font for the text
      *
      * @example
      * ```php
@@ -409,19 +403,19 @@ trait AsciiArt
     {
         // Rendu temporaire pour mesurer la largeur
         $tempLines = [];
-        $fontData = static::$asciiFonts[$font];
-        $chars = str_split($text);
-        $maxWidth = 0;
+        $fontData  = static::$asciiFonts[$font];
+        $chars     = str_split($text);
+        $maxWidth  = 0;
 
         foreach ($chars as $char) {
             if (isset($fontData[$char])) {
-                $width = strlen($fontData[$char]);
+                $width    = strlen($fontData[$char]);
                 $maxWidth = max($maxWidth, $width);
             }
         }
 
         $totalWidth = $maxWidth * count($chars) + 4;
-        $border = str_repeat($char, $totalWidth);
+        $border     = str_repeat($char, $totalWidth);
 
         $this->write($border, true);
         $this->write($char . ' ', false);

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console;
 
 /**
@@ -8,8 +17,6 @@ namespace Dimtrovich\Console;
  * This class provides a centralized collection of Unicode icon characters
  * that can be used consistently across all console components like
  * alerts and badges.
- *
- * @package Dimtrovich\Console
  *
  * @example
  * ```php

@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Traits;
 
 use Ahc\Cli\Input\Reader;
@@ -16,7 +25,6 @@ use function Ahc\Cli\t;
  * @property Interactor $io
  * @property Reader     $reader
  *
- * @package Dimtrovich\Console\Traits
  * @mixin \Dimtrovich\Console\Command
  */
 trait InteractsWithInput
@@ -24,10 +32,10 @@ trait InteractsWithInput
     /**
      * Prompt the user for input.
      *
-     * @param string          $text    Prompt text
-     * @param mixed|null      $default Default value
-     * @param callable|null   $fn      Validator/sanitizer callback
-     * @param int             $retry   Number of retries on failure
+     * @param string        $text    Prompt text
+     * @param mixed|null    $default Default value
+     * @param callable|null $fn      Validator/sanitizer callback
+     * @param int           $retry   Number of retries on failure
      *
      * @return mixed User input
      */
@@ -39,9 +47,9 @@ trait InteractsWithInput
     /**
      * Prompt the user for hidden input (like password).
      *
-     * @param string          $text  Prompt text
-     * @param callable|null   $fn    Validator/sanitizer callback
-     * @param int             $retry Number of retries on failure
+     * @param string        $text  Prompt text
+     * @param callable|null $fn    Validator/sanitizer callback
+     * @param int           $retry Number of retries on failure
      *
      * @return mixed User input
      */
@@ -53,8 +61,8 @@ trait InteractsWithInput
     /**
      * Ask the user for input (alias of prompt).
      *
-     * @param string        $question Question text
-     * @param mixed|null    $default  Default value
+     * @param string     $question Question text
+     * @param mixed|null $default  Default value
      *
      * @return mixed User input
      */
@@ -80,16 +88,16 @@ trait InteractsWithInput
     /**
      * Ask with auto-completion from given choices.
      *
-     * @param string        $question Prompt question
-     * @param array<string> $choices  Available choices
-     * @param mixed|null    $default  Default value
+     * @param string       $question Prompt question
+     * @param list<string> $choices  Available choices
+     * @param mixed|null   $default  Default value
      *
      * @return mixed User input
      */
     public function askWithCompletion(string $question, array $choices, mixed $default = null): mixed
     {
         return $this->prompt($question, $default, function ($input) use ($choices) {
-            if (!in_array($input, $choices, true)) {
+            if (! in_array($input, $choices, true)) {
                 throw new InvalidArgumentException(
                     t('Value must be one of: %s', [implode(', ', $choices)])
                 );
@@ -102,10 +110,10 @@ trait InteractsWithInput
     /**
      * Let the user make a single choice from available choices.
      *
-     * @param string        $question Prompt question
-     * @param array<string> $choices  Available choices
-     * @param mixed|null    $default  Default value if not chosen or invalid
-     * @param bool          $case     Whether user input should be case-sensitive
+     * @param string       $question Prompt question
+     * @param list<string> $choices  Available choices
+     * @param mixed|null   $default  Default value if not chosen or invalid
+     * @param bool         $case     Whether user input should be case-sensitive
      *
      * @return mixed User choice or default value
      */
@@ -114,7 +122,7 @@ trait InteractsWithInput
         $this->writer->question($question)->eol();
 
         foreach ($choices as $key => $value) {
-            $this->writer->choice(str_pad("  [$key]", 6))->answer($value)->eol();
+            $this->writer->choice(str_pad("  [{$key}]", 6))->answer($value)->eol();
         }
 
         $choice = $this->prompt(t('Choice'));
@@ -125,19 +133,19 @@ trait InteractsWithInput
     /**
      * Let the user make multiple choices from available choices.
      *
-     * @param string        $question Prompt question
-     * @param array<string> $choices  Available choices
-     * @param mixed|null    $default  Default value if not chosen or invalid
-     * @param bool          $case     Whether user input should be case-sensitive
+     * @param string       $question Prompt question
+     * @param list<string> $choices  Available choices
+     * @param mixed|null   $default  Default value if not chosen or invalid
+     * @param bool         $case     Whether user input should be case-sensitive
      *
-     * @return array<string> User choices or default values
+     * @return list<string> User choices or default values
      */
     public function choices(string $question, array $choices, $default = null, bool $case = false): array
     {
         $this->writer->question($question)->eol();
 
         foreach ($choices as $key => $value) {
-            $this->writer->choice(str_pad("  [$key]", 6))->answer($value)->eol();
+            $this->writer->choice(str_pad("  [{$key}]", 6))->answer($value)->eol();
         }
 
         $choice = $this->prompt(t('Choices (comma separated)'));
@@ -167,10 +175,10 @@ trait InteractsWithInput
     /**
      * Validate a choice against available choices.
      *
-     * @param mixed         $choice  User choice
-     * @param array<string> $choices Available choices
-     * @param mixed|null    $default Default value
-     * @param bool          $case    Whether comparison should be case-sensitive
+     * @param mixed        $choice  User choice
+     * @param list<string> $choices Available choices
+     * @param mixed|null   $default Default value
+     * @param bool         $case    Whether comparison should be case-sensitive
      *
      * @return mixed Validated choice or default value
      */

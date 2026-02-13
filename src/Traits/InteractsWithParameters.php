@@ -2,12 +2,20 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Traits;
 
 /**
  * Provides interaction with command parameters (arguments and options).
  *
- * @package Dimtrovich\Console\Traits
  * @mixin \Dimtrovich\Console\Command
  */
 trait InteractsWithParameters

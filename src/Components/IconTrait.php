@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Components;
 
 /**
@@ -7,8 +16,6 @@ namespace Dimtrovich\Console\Components;
  *
  * Provides consistent icon display functionality across
  * Alert, Badge, Logger, and other components.
- *
- * @package Dimtrovich\Console\Components
  */
 trait IconTrait
 {
@@ -17,8 +24,6 @@ trait IconTrait
      *
      * When true, components will display their default icons
      * (e.g., ℹ for info, ✓ for success) unless explicitly overridden.
-     *
-     * @var bool
      */
     private static bool $showDefaultIcons = false;
 
@@ -29,8 +34,6 @@ trait IconTrait
      * Individual method calls can still override with explicit icon parameters.
      *
      * @param bool $enabled Whether to show default icons
-     *
-     * @return void
      *
      * @example
      * ```php
@@ -61,12 +64,12 @@ trait IconTrait
     /**
      * Resolve the icon based on input and global settings.
      *
-     * @param string|null|false $icon     Icon parameter from method call
-     * @param string|null       $default  Default icon for this alert type
+     * @param false|string|null $icon    Icon parameter from method call
+     * @param string|null       $default Default icon for this alert type
      *
      * @return string|null The resolved icon (null = no icon)
      */
-    protected function resolveIcon(string|null|false $icon, ?string $default): ?string
+    protected function resolveIcon(false|string|null $icon, ?string $default): ?string
     {
         // Explicitly false means no icon, regardless of global setting
         if ($icon === false) {

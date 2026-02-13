@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use BlitzPHP\CodingStandard\Blitz;
 use Nexus\CsConfig\Factory;
 use Nexus\CsConfig\Fixer\Comment\NoCodeSeparatorCommentFixer;
@@ -30,7 +39,7 @@ $options = [
 ];
 
 return Factory::create(new Blitz(), $overrides, $options)->forLibrary(
-    'Blitz PHP - Console',
+    'Dimtrovich - Console',
     'Dimitri Sitchet Tomkeu',
     'devcode.dst@gmail.com',
     2026

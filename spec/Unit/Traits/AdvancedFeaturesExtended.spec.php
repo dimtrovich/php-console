@@ -1,55 +1,66 @@
 <?php
 
-use Dimtrovich\Console\Traits\AdvancedFeatures;
-use Dimtrovich\Console\Overrides\Cursor;
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 use Ahc\Cli\IO\Interactor;
 use Dimtrovich\Console\Components\ProgressBar;
+use Dimtrovich\Console\Overrides\Cursor;
+use Dimtrovich\Console\Traits\AdvancedFeatures;
 use Kahlan\Arg;
 
 use function Kahlan\expect;
 
 describe('Traits / AdvancedFeatures - Extended', function () {
-	fileHook(
-		file: ['output-advanced-extended-input.test', 'output-advanced-extended-writer.test'],
-		beforeAll: function() {
-			$this->getAdvanced = function($io) {
-				$advanced = new class {
-					use AdvancedFeatures;
-					protected $io;
-					protected $writer;
-					protected $reader;
-					protected $terminal;
-					public $cursor;
+    fileHook(
+        file: ['output-advanced-extended-input.test', 'output-advanced-extended-writer.test'],
+        beforeAll: function () {
+            $this->getAdvanced = function ($io) {
+                $advanced = new class () {
+                    use AdvancedFeatures;
 
-					public function setParams($io) {
-						$this->io = $io;
-						$this->reader = $io->reader();
-						$this->writer = $io->writer();
-						$this->terminal = $this->writer->terminal();
-						$this->cursor = new Cursor();
+                    protected $io;
+                    protected $writer;
+                    protected $reader;
+                    protected $terminal;
+                    public $cursor;
 
-						return $this;
-					}
+                    public function setParams($io)
+                    {
+                        $this->io       = $io;
+                        $this->reader   = $io->reader();
+                        $this->writer   = $io->writer();
+                        $this->terminal = $this->writer->terminal();
+                        $this->cursor   = new Cursor();
 
-					 public function progress($total = null) {
-						return new ProgressBar($total, $this->writer);
-					}
-				};
+                        return $this;
+                    }
 
-				return $advanced->setParams($io);
-			};
-		},
-		beforeEach: function($files) {
-			$this->interactor = new Interactor(...$files);
-			$this->writer = $this->interactor->writer();
-			$this->reader = $this->interactor->reader();
-			$this->advanced = $this->getAdvanced($this->interactor);
-			$this->cursor = $this->advanced->cursor;
-		},
-	);
+                    public function progress($total = null)
+                    {
+                        return new ProgressBar($total, $this->writer);
+                    }
+                };
+
+                return $advanced->setParams($io);
+            };
+        },
+        beforeEach: function ($files) {
+            $this->interactor = new Interactor(...$files);
+            $this->writer     = $this->interactor->writer();
+            $this->reader     = $this->interactor->reader();
+            $this->advanced   = $this->getAdvanced($this->interactor);
+            $this->cursor     = $this->advanced->cursor;
+        },
+    );
 
     describe('heatmap', function () {
-
         it('displays heatmap with default colors', function () {
             $data = [10, 20, 5, 30, 15];
 
@@ -62,10 +73,10 @@ describe('Traits / AdvancedFeatures - Extended', function () {
         });
 
         it('displays heatmap with custom colors', function () {
-            $data = [1, 2, 3, 4, 5];
+            $data   = [1, 2, 3, 4, 5];
             $colors = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
 
-            expect($this->writer)->toReceive('write')->with(Arg::toMatch(fn($actual) => in_array($actual, $colors)))->times(5);
+            expect($this->writer)->toReceive('write')->with(Arg::toMatch(fn ($actual) => in_array($actual, $colors, true)))->times(5);
 
             $this->advanced->heatmap($data, $colors);
         });
@@ -89,7 +100,6 @@ describe('Traits / AdvancedFeatures - Extended', function () {
     });
 
     describe('grid with formatter', function () {
-
         it('handles empty grid', function () {
             expect($this->writer)->not->toReceive('write');
 
@@ -97,10 +107,8 @@ describe('Traits / AdvancedFeatures - Extended', function () {
         });
 
         it('handles formatter returning non-string', function () {
-            $data = [[1, 2], [3, 4]];
-            $formatter = function ($cell) {
-                return $cell * 2;
-            };
+            $data      = [[1, 2], [3, 4]];
+            $formatter = fn ($cell) => $cell * 2;
 
             expect($this->writer)->toReceive('write')->with(Arg::toContain('2'))->once();
 
@@ -110,7 +118,7 @@ describe('Traits / AdvancedFeatures - Extended', function () {
         it('calculates column widths correctly', function () {
             $data = [
                 ['Short', 'Very long text'],
-                ['Tiny', 'Small']
+                ['Tiny', 'Small'],
             ];
 
             expect($this->writer)->toReceive('write')->with(Arg::toContain('Short  '))->once();
@@ -121,11 +129,10 @@ describe('Traits / AdvancedFeatures - Extended', function () {
     });
 
     describe('menu with complex options', function () {
-
         it('handles menu with array options', function () {
             $options = [
                 '1' => ['label' => 'Option 1', 'value' => 100],
-                '2' => ['label' => 'Option 2', 'value' => 200]
+                '2' => ['label' => 'Option 2', 'value' => 200],
             ];
 
             allow($this->interactor)->toReceive('prompt')->andReturn('2');
@@ -138,7 +145,7 @@ describe('Traits / AdvancedFeatures - Extended', function () {
         it('handles menu with simple string options', function () {
             $options = [
                 'yes' => 'Yes',
-                'no' => 'No'
+                'no'  => 'No',
             ];
 
             allow($this->interactor)->toReceive('prompt')->andReturn('no');
@@ -170,7 +177,6 @@ describe('Traits / AdvancedFeatures - Extended', function () {
     });
 
     describe('chart edge cases', function () {
-
         it('handles empty data for chart', function () {
             expect($this->writer)->not->toReceive('write');
 
@@ -195,7 +201,6 @@ describe('Traits / AdvancedFeatures - Extended', function () {
     });
 
     describe('animation edge cases', function () {
-
         it('handles empty frames', function () {
             expect($this->writer)->toReceive('write')->times(2); // hide et show
 
@@ -220,7 +225,6 @@ describe('Traits / AdvancedFeatures - Extended', function () {
     });
 
     describe('notification edge cases', function () {
-
         it('handles different OS families', function () {
             // On ne peut pas tester l'exécution réelle, mais on peut vérifier qu'il n'y a pas d'erreur
 

@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Traits;
 
 use Ahc\Cli\Output\Writer;
@@ -9,9 +18,8 @@ use Ahc\Cli\Output\Writer;
 /**
  * Provides methods for formatting console output.
  *
- * @property Writer   $writer
+ * @property Writer $writer
  *
- * @package Dimtrovich\Console\Traits
  * @mixin \Dimtrovich\Console\Command
  */
 trait FormatsOutput
@@ -19,11 +27,9 @@ trait FormatsOutput
     /**
      * Write a message with optional color.
      *
-     * @param string      $message    Message to write
-     * @param string|null $color      Color name
-     * @param int         $verbosity  Verbosity level
-     *
-     * @return self
+     * @param string      $message   Message to write
+     * @param string|null $color     Color name
+     * @param int         $verbosity Verbosity level
      */
     public function line(string $message, ?string $color = null, int $verbosity = 1): self
     {
@@ -193,7 +199,7 @@ trait FormatsOutput
      *
      * @param string $message Message to colorize
      * @param string $style   Color or style name
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function colorize(string $message, string $style, bool $eol = false): self
     {
@@ -206,9 +212,7 @@ trait FormatsOutput
      * Write a message in bold.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
-     *
-     * @return self
+     * @param bool   $eol     Whether to add end of line
      */
     public function bold(string $message, bool $eol = false): self
     {
@@ -221,18 +225,18 @@ trait FormatsOutput
      * Write a message in italic.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function italic(string $message, bool $eol = false): self
     {
-		return $this->colorize($message, 'italic', $eol);
+        return $this->colorize($message, 'italic', $eol);
     }
 
     /**
      * Write a message with underline.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function underline(string $message, bool $eol = false): self
     {
@@ -243,7 +247,7 @@ trait FormatsOutput
      * Write a message with strikethrough.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function strike(string $message, bool $eol = false): self
     {
@@ -254,18 +258,18 @@ trait FormatsOutput
      * Write a message in red.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function red(string $message, bool $eol = false): self
     {
-		return $this->colorize($message, 'red', $eol);
+        return $this->colorize($message, 'red', $eol);
     }
 
     /**
      * Write a message in green.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function green(string $message, bool $eol = false): self
     {
@@ -276,7 +280,7 @@ trait FormatsOutput
      * Write a message in blue.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function blue(string $message, bool $eol = false): self
     {
@@ -287,7 +291,7 @@ trait FormatsOutput
      * Write a message in yellow.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function yellow(string $message, bool $eol = false): self
     {
@@ -298,7 +302,7 @@ trait FormatsOutput
      * Write a message in magenta.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function magenta(string $message, bool $eol = false): self
     {
@@ -309,7 +313,7 @@ trait FormatsOutput
      * Write a message in cyan.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function cyan(string $message, bool $eol = false): self
     {
@@ -320,7 +324,7 @@ trait FormatsOutput
      * Write a message in gray.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function gray(string $message, bool $eol = false): self
     {
@@ -331,7 +335,7 @@ trait FormatsOutput
      * Write a message in black.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function black(string $message, bool $eol = false): self
     {
@@ -342,29 +346,29 @@ trait FormatsOutput
      * Write a message in white.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function white(string $message, bool $eol = false): self
     {
         return $this->colorize($message, 'white', $eol);
     }
 
-	/**
+    /**
      * Write a message in purple.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function purple(string $message, bool $eol = false): self
     {
         return $this->colorize($message, 'purple', $eol);
     }
 
-	/**
+    /**
      * Write a message in indigo.
      *
      * @param string $message Message to write
-	 * @param bool   $eol     Whether to add end of line
+     * @param bool   $eol     Whether to add end of line
      */
     public function indigo(string $message, bool $eol = false): self
     {
@@ -388,8 +392,6 @@ trait FormatsOutput
      * Add end of line(s).
      *
      * @param int $n Number of end of lines
-     *
-     * @return static
      */
     public function eol(int $n = 1): static
     {
@@ -409,9 +411,9 @@ trait FormatsOutput
     /**
      * Display a bullet list.
      *
-     * @param array<string> $items List items
-     * @param string        $title List title
-     * @param string        $color Title color
+     * @param list<string> $items List items
+     * @param string       $title List title
+     * @param string       $color Title color
      */
     public function bulletList(array $items, string $title = '', string $color = 'yellow'): self
     {
@@ -429,9 +431,9 @@ trait FormatsOutput
     /**
      * Display a numbered list.
      *
-     * @param array<string> $items List items
-     * @param string        $title List title
-     * @param string        $color Title color
+     * @param list<string> $items List items
+     * @param string       $title List title
+     * @param string       $color Title color
      */
     public function numberedList(array $items, string $title = '', string $color = 'yellow'): self
     {
@@ -440,13 +442,13 @@ trait FormatsOutput
         }
 
         foreach ($items as $index => $item) {
-            $this->writer->colors(sprintf("  <green>%d.</end> %s", $index + 1, $item))->eol();
+            $this->writer->colors(sprintf('  <green>%d.</end> %s', $index + 1, $item))->eol();
         }
 
         return $this;
     }
 
-	/**
+    /**
      * Display an alert message.
      *
      * @param string $message Alert message

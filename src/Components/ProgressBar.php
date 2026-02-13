@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * This file is part of Dimtrovich - Console.
+ *
+ * (c) 2026 Dimitri Sitchet Tomkeu <devcode.dst@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
 namespace Dimtrovich\Console\Components;
 
 use Ahc\Cli\Output\ProgressBar as AhcProgressBar;
@@ -11,8 +20,6 @@ use function Ahc\Cli\t;
 
 /**
  * Extended progress bar with additional features.
- *
- * @package Dimtrovich\Console\Overrides
  */
 class ProgressBar extends AhcProgressBar
 {
@@ -67,7 +74,7 @@ class ProgressBar extends AhcProgressBar
     public function showStats(): void
     {
         $elapsed = microtime(true) - $this->startTime;
-        $speed = $this->current > 0 ? $this->current / $elapsed : 0;
+        $speed   = $this->current > 0 ? $this->current / $elapsed : 0;
 
         $this->writer->colors(sprintf(
             "\n<yellow>%s:</end> %d items in %.2fs (%.2f items/s)",
@@ -77,11 +84,11 @@ class ProgressBar extends AhcProgressBar
             $speed
         ))->eol();
 
-        if (!empty($this->messages)) {
+        if (! empty($this->messages)) {
             $this->writer->colors('<yellow>' . t('Messages') . ':</end>');
 
             foreach ($this->messages as $message) {
-                $this->writer->write("  • " . $message)->eol();
+                $this->writer->write('  • ' . $message)->eol();
             }
         }
     }
