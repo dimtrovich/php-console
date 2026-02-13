@@ -133,7 +133,7 @@ class Application
      */
     public function withLocale(string $locale): self
     {
-        if (file_exists($path = __DIR__ . "/locales/{$locale}.php")) {
+        if (file_exists($path = __DIR__ . "/../assets/locales/{$locale}.php")) {
             $translations = require $path;
 
             $this->withTranslations($locale, $translations, true);
@@ -273,7 +273,7 @@ class Application
      */
     public function withTheme(string $theme): self
     {
-		if (! file_exists($path = __DIR__ . "/themes/{$theme}.php")) {
+		if (! file_exists($path = __DIR__ . "/../assets/themes/{$theme}.php")) {
 			throw new InvalidArgumentException(
                 t('Theme "%1$s" not found. Available themes: %2$s.',
                     [$theme, implode(', ', array_keys(self::AVAILABLE_THEMES))]
