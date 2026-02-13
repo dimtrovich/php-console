@@ -18,7 +18,7 @@ trait SingletonTrait
      *
      * @var static|null
      */
-    private static $instance;
+    protected static $instance;
 
     /**
      * Get the singleton instance.
@@ -26,7 +26,7 @@ trait SingletonTrait
     public static function instance(): static
     {
         if (static::$instance === null) {
-            static::$instance = new static(...func_get_args());
+            static::$instance = new self(...func_get_args());
         }
 
         return static::$instance;

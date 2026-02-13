@@ -16,6 +16,7 @@ use BlitzPHP\Contracts\Container\ContainerInterface;
 use Dimtrovich\Console\Components\Alert;
 use Dimtrovich\Console\Components\Badge;
 use Dimtrovich\Console\Components\Logger;
+use Dimtrovich\Console\Exceptions\InvalidCommandException;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
@@ -26,6 +27,8 @@ use function Ahc\Cli\t;
  *
  * This class provides a fluent interface for configuring and running
  * a console application based on the adhocore/cli library.
+ *
+ * @phpstan-consistent-constructor
  *
  * @example
  * ```php

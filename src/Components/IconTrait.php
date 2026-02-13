@@ -25,7 +25,7 @@ trait IconTrait
      * When true, components will display their default icons
      * (e.g., ℹ for info, ✓ for success) unless explicitly overridden.
      */
-    private static bool $showDefaultIcons = false;
+    protected static bool $showDefaultIcons = false;
 
     /**
      * Enable or disable default icons globally.
