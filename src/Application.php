@@ -281,7 +281,7 @@ class Application
             );
 		}
 
-        $styles = require_once $path;
+        $styles = require $path;
 
         return $this->withStyles($styles);
     }

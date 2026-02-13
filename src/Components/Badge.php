@@ -156,7 +156,7 @@ class Badge
      */
     public function danger(string $message, string $label = 'DANGER', string|null|false $icon = null): self
     {
-        return $this->error($message, $label, $icon ?? Icon::DANGER);
+        return $this->error($message, $label, $icon);
     }
 
     /**

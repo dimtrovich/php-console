@@ -155,7 +155,7 @@ class Alert
      */
     public function danger(string $message, ?string $title = null, string|null|false $icon = null): self
     {
-        return $this->error($message, $title, $icon ?? Icon::DANGER);
+        return $this->error($message, $title, $icon);
     }
 
     /**
