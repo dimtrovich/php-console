@@ -1,18 +1,18 @@
-# BlitzPHP Console
+# Dimtrovich Console
 
-[![Latest Version](https://img.shields.io/packagist/v/blitzphp/console.svg?style=flat-square)](https://packagist.org/packages/blitzphp/console)
-[![Total Downloads](https://img.shields.io/packagist/dt/blitzphp/console.svg?style=flat-square)](https://packagist.org/packages/blitzphp/console)
-[![License](https://img.shields.io/packagist/l/blitzphp/console.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![PHP Version](https://img.shields.io/packagist/php-v/blitzphp/console.svg?style=flat-square)](https://php.net)
+[![Latest Version](https://img.shields.io/packagist/v/dimtrovich/console.svg?style=flat-square)](https://packagist.org/packages/dimtrovich/console)
+[![Total Downloads](https://img.shields.io/packagist/dt/dimtrovich/console.svg?style=flat-square)](https://packagist.org/packages/dimtrovich/console)
+[![License](https://img.shields.io/packagist/l/dimtrovich/console.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![PHP Version](https://img.shields.io/packagist/php-v/dimtrovich/console.svg?style=flat-square)](https://php.net)
 
 **English** | [Français](./README-FR.md)
 
-A powerful, feature-rich console application builder for PHP. Built on top of `adhocore/cli`, BlitzPHP Console provides an elegant and intuitive interface for creating command-line tools with advanced features like ASCII art, progress bars, interactive menus, and beautiful output formatting.
+A powerful, feature-rich console application builder for PHP. Built on top of [adhocore/cli](https://github.com/adhocore/php-cli), Dimtrovich Console provides an elegant and intuitive interface for creating command-line tools with advanced features like ASCII art, progress bars, interactive menus, and beautiful output formatting.
 
 ## 📦 Installation
 
 ```bash
-composer require blitzphp/console
+composer require dimtrovich/console
 ```
 
 ## 🚀 Quick Start
@@ -22,8 +22,8 @@ composer require blitzphp/console
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use BlitzPHP\Console\Application;
-use BlitzPHP\Console\Command;
+use Dimtrovich\Console\Application;
+use Dimtrovich\Console\Command;
 
 // Create a simple command
 class GreetCommand extends Command
@@ -70,7 +70,7 @@ exit($app);
 
 ## Core Concepts
 
-BlitzPHP Console is built around several key concepts:
+Dimtrovich Console is built around several key concepts:
 
 - **Application**: The main entry point that manages commands and configuration
 - **Command**: Individual executable tasks with arguments and options
@@ -84,7 +84,7 @@ BlitzPHP Console is built around several key concepts:
 ```php
 <?php
 
-use BlitzPHP\Console\Command;
+use Dimtrovich\Console\Command;
 
 class UserCommand extends Command
 {
@@ -598,7 +598,7 @@ class AnimationCommand extends Command
 ### Alerts
 
 ```php
-use BlitzPHP\Console\Components\Alert;
+use Dimtrovich\Console\Components\Alert;
 
 class AlertCommand extends Command
 {
@@ -633,7 +633,7 @@ class AlertCommand extends Command
 ### Badges
 
 ```php
-use BlitzPHP\Console\Components\Badge;
+use Dimtrovich\Console\Components\Badge;
 
 class BadgeCommand extends Command
 {
@@ -666,7 +666,7 @@ class BadgeCommand extends Command
 ### Icons
 
 ```php
-use BlitzPHP\Console\Icon;
+use Dimtrovich\Console\Icon;
 
 class IconCommand extends Command
 {
@@ -687,7 +687,7 @@ class IconCommand extends Command
 ## ASCII Art
 
 ```php
-use BlitzPHP\Console\Traits\AsciiArt;
+use Dimtrovich\Console\Traits\AsciiArt;
 
 class AsciiCommand extends Command
 {
@@ -739,7 +739,7 @@ class AsciiCommand extends Command
 
 ## Themes and Styling
 
-BlitzPHP Console comes with 8 built-in themes, each carefully designed for different environments and preferences.
+Dimtrovich Console comes with 8 built-in themes, each carefully designed for different environments and preferences.
 
 ### Available Themes
 
@@ -821,7 +821,7 @@ All themes leverage 256-color support for richer, more precise colors:
 
 ## Internationalization (i18n)
 
-BlitzPHP Console supports multiple languages with built-in translations for French and extensible translation system for other languages.
+Dimtrovich Console supports multiple languages with built-in translations for French and extensible translation system for other languages.
 
 ### Built-in Locales
 
@@ -898,7 +898,7 @@ $app->withTranslations('es', require 'es.php', true);
 ### Basic Setup
 
 ```php
-use BlitzPHP\Console\Application;
+use Dimtrovich\Console\Application;
 
 $app = Application::create('My Console App', '2.1.0')
     ->withLocale('fr')                       // Use French translations
@@ -1402,6 +1402,6 @@ public function testInteractiveCommand()
 
 ## 📄 License
 
-The BlitzPHP Console package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The Dimtrovich Console package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 ---

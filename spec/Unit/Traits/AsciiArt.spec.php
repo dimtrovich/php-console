@@ -1,6 +1,6 @@
 <?php
 
-use BlitzPHP\Console\Traits\AsciiArt;
+use Dimtrovich\Console\Traits\AsciiArt;
 
 use function Kahlan\expect;
 

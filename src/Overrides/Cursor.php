@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Overrides;
+namespace Dimtrovich\Console\Overrides;
 
 use Ahc\Cli\Output\Cursor as AhcCursor;
 
 /**
  * Extended cursor with additional functionality.
  *
- * @package BlitzPHP\Console\Overrides
+ * @package Dimtrovich\Console\Overrides
  */
 class Cursor extends AhcCursor
 {

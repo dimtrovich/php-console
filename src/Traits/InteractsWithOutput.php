@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Traits;
+namespace Dimtrovich\Console\Traits;
 
 use Ahc\Cli\Helper\Terminal;
 use Ahc\Cli\Output\Color;
 use Ahc\Cli\Output\Writer;
-use BlitzPHP\Console\Components\Alert;
-use BlitzPHP\Console\Components\Badge;
-use BlitzPHP\Console\Components\Logger;
-use BlitzPHP\Console\Components\ProgressBar;
-use BlitzPHP\Console\Overrides\Cursor;
+use Dimtrovich\Console\Components\Alert;
+use Dimtrovich\Console\Components\Badge;
+use Dimtrovich\Console\Components\Logger;
+use Dimtrovich\Console\Components\ProgressBar;
+use Dimtrovich\Console\Overrides\Cursor;
 use RuntimeException;
 
 use function Ahc\Cli\t;
@@ -24,8 +24,8 @@ use function Ahc\Cli\t;
  * @property Terminal $terminal
  * @property Writer   $writer
  *
- * @package BlitzPHP\Console\Traits
- * @mixin \BlitzPHP\Console\Command
+ * @package Dimtrovich\Console\Traits
+ * @mixin \Dimtrovich\Console\Command
  */
 trait InteractsWithOutput
 {

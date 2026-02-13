@@ -1,6 +1,6 @@
 <?php
 
-namespace BlitzPHP\Console;
+namespace Dimtrovich\Console;
 
 /**
  * Central registry of icon characters for console components.
@@ -9,11 +9,11 @@ namespace BlitzPHP\Console;
  * that can be used consistently across all console components like
  * alerts and badges.
  *
- * @package BlitzPHP\Console
+ * @package Dimtrovich\Console
  *
  * @example
  * ```php
- * use BlitzPHP\Console\Icon;
+ * use Dimtrovich\Console\Icon;
  *
  * $badge->success('User created', 'USER', Icon::USER);
  * $alert->warning('Low disk space', 'DISK', Icon::WARNING);

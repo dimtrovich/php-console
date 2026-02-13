@@ -1,9 +1,9 @@
 <?php
 
-use BlitzPHP\Console\Traits\AdvancedFeatures;
-use BlitzPHP\Console\Overrides\Cursor;
+use Dimtrovich\Console\Traits\AdvancedFeatures;
+use Dimtrovich\Console\Overrides\Cursor;
 use Ahc\Cli\IO\Interactor;
-use BlitzPHP\Console\Components\ProgressBar;
+use Dimtrovich\Console\Components\ProgressBar;
 use Kahlan\Arg;
 
 use function Kahlan\expect;

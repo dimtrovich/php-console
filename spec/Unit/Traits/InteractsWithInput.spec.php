@@ -1,6 +1,6 @@
 <?php
 
-use BlitzPHP\Console\Traits\InteractsWithInput;
+use Dimtrovich\Console\Traits\InteractsWithInput;
 use Ahc\Cli\IO\Interactor;
 
 use function Ahc\Cli\t;

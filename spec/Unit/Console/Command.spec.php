@@ -1,7 +1,7 @@
 <?php
 
-use BlitzPHP\Console\Command;
-use BlitzPHP\Console\Console;
+use Dimtrovich\Console\Command;
+use Dimtrovich\Console\Console;
 
 use function Kahlan\expect;
 
@@ -21,7 +21,7 @@ describe('Command', function () {
 
             $baseCommand = $command->initialize($this->console);
 
-            expect($baseCommand)->toBeAnInstanceOf(\BlitzPHP\Console\Overrides\Command::class);
+            expect($baseCommand)->toBeAnInstanceOf(\Dimtrovich\Console\Overrides\Command::class);
         });
 
         it('sets required properties', function () {
@@ -37,7 +37,7 @@ describe('Command', function () {
 
             $baseCommand = $command->initialize($this->console);
 
-			expect($baseCommand)->toBeAnInstanceOf(BlitzPHP\Console\Overrides\Command::class);
+			expect($baseCommand)->toBeAnInstanceOf(Dimtrovich\Console\Overrides\Command::class);
 			expect($baseCommand->name())->toBe('test:props');
             expect($baseCommand->desc())->toBe('Test description');
             expect($baseCommand->group())->toBe('testing');

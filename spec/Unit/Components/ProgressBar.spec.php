@@ -1,7 +1,7 @@
 <?php
 
 use Ahc\Cli\Output\Writer;
-use BlitzPHP\Console\Components\ProgressBar;
+use Dimtrovich\Console\Components\ProgressBar;
 use Kahlan\Arg;
 
 use function Kahlan\expect;

@@ -1,6 +1,6 @@
 <?php
 
-use BlitzPHP\Console\Traits\FormatsOutput;
+use Dimtrovich\Console\Traits\FormatsOutput;
 use Ahc\Cli\Output\Writer;
 use Ahc\Cli\Output\Color;
 use Kahlan\Arg;

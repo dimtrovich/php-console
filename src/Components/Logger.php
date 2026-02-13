@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Components;
+namespace Dimtrovich\Console\Components;
 
 
 use Ahc\Cli\Output\Writer;
 use BadMethodCallException;
-use BlitzPHP\Console\Icon;
+use Dimtrovich\Console\Icon;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
 use Psr\Log\LogLevel;
@@ -19,7 +19,7 @@ use function Ahc\Cli\t;
 /**
  * Logger component that combines console output with PSR logging.
  *
- * @package BlitzPHP\Console\Components
+ * @package Dimtrovich\Console\Components
  *
  * @method void danger(string|Stringable $message, array $context = [])
  * @method void fail(string|Stringable $message, array $context = [])

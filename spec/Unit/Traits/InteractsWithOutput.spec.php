@@ -1,12 +1,12 @@
 <?php
 
 use Ahc\Cli\Output\Writer;
-use BlitzPHP\Console\Overrides\Cursor;
-use BlitzPHP\Console\Traits\InteractsWithOutput;
-use BlitzPHP\Console\Components\Alert;
-use BlitzPHP\Console\Components\Badge;
-use BlitzPHP\Console\Components\Logger;
-use BlitzPHP\Console\Components\ProgressBar;
+use Dimtrovich\Console\Overrides\Cursor;
+use Dimtrovich\Console\Traits\InteractsWithOutput;
+use Dimtrovich\Console\Components\Alert;
+use Dimtrovich\Console\Components\Badge;
+use Dimtrovich\Console\Components\Logger;
+use Dimtrovich\Console\Components\ProgressBar;
 use Kahlan\Arg;
 use Kahlan\Plugin\Double;
 use Psr\Log\LoggerInterface;

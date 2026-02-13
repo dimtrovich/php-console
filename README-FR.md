@@ -1,18 +1,18 @@
-# BlitzPHP Console
+# Dimtrovich Console
 
-[![Latest Version](https://img.shields.io/packagist/v/blitzphp/console.svg?style=flat-square)](https://packagist.org/packages/blitzphp/console)
-[![Total Downloads](https://img.shields.io/packagist/dt/blitzphp/console.svg?style=flat-square)](https://packagist.org/packages/blitzphp/console)
-[![License](https://img.shields.io/packagist/l/blitzphp/console.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![PHP Version](https://img.shields.io/packagist/php-v/blitzphp/console.svg?style=flat-square)](https://php.net)
+[![Latest Version](https://img.shields.io/packagist/v/dimtrovich/console.svg?style=flat-square)](https://packagist.org/packages/dimtrovich/console)
+[![Total Downloads](https://img.shields.io/packagist/dt/dimtrovich/console.svg?style=flat-square)](https://packagist.org/packages/dimtrovich/console)
+[![License](https://img.shields.io/packagist/l/dimtrovich/console.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![PHP Version](https://img.shields.io/packagist/php-v/dimtrovich/console.svg?style=flat-square)](https://php.net)
 
 [English](README.md) | **Français**
 
-Un constructeur d'applications console puissant et riche en fonctionnalités pour PHP. Construit sur `adhocore/cli`, BlitzPHP Console fournit une interface élégante et intuitive pour créer des outils en ligne de commande avec des fonctionnalités avancées comme l'art ASCII, les barres de progression, les menus interactifs et un formatage de sortie magnifique.
+Un constructeur d'applications console puissant et riche en fonctionnalités pour PHP. Construit sur [adhocore/cli](https://github.com/adhocore/php-cli), Dimtrovich Console fournit une interface élégante et intuitive pour créer des outils en ligne de commande avec des fonctionnalités avancées comme l'art ASCII, les barres de progression, les menus interactifs et un formatage de sortie magnifique.
 
 ## 📦 Installation
 
 ```bash
-composer require blitzphp/console
+composer require dimtrovich/console
 ```
 
 ## 🚀 Démarrage Rapide
@@ -22,8 +22,8 @@ composer require blitzphp/console
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use BlitzPHP\Console\Application;
-use BlitzPHP\Console\Command;
+use Dimtrovich\Console\Application;
+use Dimtrovich\Console\Command;
 
 // Créer une commande simple
 class SalutationCommande extends Command
@@ -71,7 +71,7 @@ exit($app);
 
 ## Concepts Fondamentaux
 
-BlitzPHP Console est construit autour de plusieurs concepts clés :
+Dimtrovich Console est construit autour de plusieurs concepts clés :
 
 - **Application** : Point d'entrée principal qui gère les commandes et la configuration
 - **Commande** : Tâches exécutables individuelles avec arguments et options
@@ -85,7 +85,7 @@ BlitzPHP Console est construit autour de plusieurs concepts clés :
 ```php
 <?php
 
-use BlitzPHP\Console\Command;
+use Dimtrovich\Console\Command;
 
 class UtilisateurCommande extends Command
 {
@@ -340,7 +340,7 @@ Graphique Circulaire
 ### Alertes
 
 ```php
-use BlitzPHP\Console\Components\Alert;
+use Dimtrovich\Console\Components\Alert;
 
 class AlerteCommande extends Command
 {
@@ -373,7 +373,7 @@ class AlerteCommande extends Command
 ### Badges
 
 ```php
-use BlitzPHP\Console\Components\Badge;
+use Dimtrovich\Console\Components\Badge;
 
 class BadgeCommande extends Command
 {
@@ -406,7 +406,7 @@ class BadgeCommande extends Command
 ### Icônes
 
 ```php
-use BlitzPHP\Console\Icon;
+use Dimtrovich\Console\Icon;
 
 class IcôneCommande extends Command
 {
@@ -427,7 +427,7 @@ class IcôneCommande extends Command
 ## Art ASCII
 
 ```php
-use BlitzPHP\Console\Traits\AsciiArt;
+use Dimtrovich\Console\Traits\AsciiArt;
 
 class AsciiCommande extends Command
 {
@@ -462,7 +462,7 @@ class AsciiCommande extends Command
 
 ## Thèmes et Styles
 
-BlitzPHP Console est livré avec 8 thèmes intégrés, chacun soigneusement conçu pour différents environnements et préférences.
+Dimtrovich Console est livré avec 8 thèmes intégrés, chacun soigneusement conçu pour différents environnements et préférences.
 
 ### Thèmes Disponibles
 
@@ -526,7 +526,7 @@ $app->withTranslations('fr', [
 ## Configuration de l'Application
 
 ```php
-use BlitzPHP\Console\Application;
+use Dimtrovich\Console\Application;
 
 $app = Application::create('Mon App Console', '2.1.0')
     ->withLocale('fr')                       // Utiliser les traductions françaises
@@ -714,4 +714,4 @@ class MaCommandeTest extends TestCase
 
 ## 📄 Licence
 
-Le package BlitzPHP Console est un logiciel open-source sous licence [MIT](https://opensource.org/licenses/MIT).	
+Le package Dimtrovich Console est un logiciel open-source sous licence [MIT](https://opensource.org/licenses/MIT).	

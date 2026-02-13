@@ -1,6 +1,6 @@
 <?php
 
-namespace BlitzPHP\Console\Components;
+namespace Dimtrovich\Console\Components;
 
 /**
  * Trait for components that support icons.
@@ -8,7 +8,7 @@ namespace BlitzPHP\Console\Components;
  * Provides consistent icon display functionality across
  * Alert, Badge, Logger, and other components.
  *
- * @package BlitzPHP\Console\Components
+ * @package Dimtrovich\Console\Components
  */
 trait IconTrait
 {

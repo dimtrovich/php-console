@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Components;
+namespace Dimtrovich\Console\Components;
 
 use Ahc\Cli\Output\ProgressBar as AhcProgressBar;
 use Ahc\Cli\Output\Writer;
@@ -12,7 +12,7 @@ use function Ahc\Cli\t;
 /**
  * Extended progress bar with additional features.
  *
- * @package BlitzPHP\Console\Overrides
+ * @package Dimtrovich\Console\Overrides
  */
 class ProgressBar extends AhcProgressBar
 {

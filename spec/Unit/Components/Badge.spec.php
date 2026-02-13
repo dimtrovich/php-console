@@ -1,6 +1,6 @@
 <?php
 
-use BlitzPHP\Console\Components\Badge;
+use Dimtrovich\Console\Components\Badge;
 use Ahc\Cli\Output\Writer;
 
 use function Kahlan\expect;

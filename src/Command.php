@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console;
+namespace Dimtrovich\Console;
 
 use Ahc\Cli\Helper\Terminal;
 use Ahc\Cli\Input\Reader;
 use Ahc\Cli\IO\Interactor;
 use Ahc\Cli\Output\Color;
 use Ahc\Cli\Output\Writer;
-use BlitzPHP\Console\Exceptions\CommandNotFoundException;
-use BlitzPHP\Console\Overrides\Command as BaseCommand;
-use BlitzPHP\Console\Overrides\Cursor;
-use BlitzPHP\Console\Traits\AdvancedFeatures;
-use BlitzPHP\Console\Traits\InteractsWithParameters;
+use Dimtrovich\Console\Exceptions\CommandNotFoundException;
+use Dimtrovich\Console\Overrides\Command as BaseCommand;
+use Dimtrovich\Console\Overrides\Cursor;
+use Dimtrovich\Console\Traits\AdvancedFeatures;
+use Dimtrovich\Console\Traits\InteractsWithParameters;
 use InvalidArgumentException;
 
 use function Ahc\Cli\t;
@@ -21,7 +21,7 @@ use function Ahc\Cli\t;
 /**
  * Base class for creating console commands.
  *
- * @package BlitzPHP\Console
+ * @package Dimtrovich\Console
  *
  * @method string name() Get the command name.
  * @method string alias() Get the command alias.

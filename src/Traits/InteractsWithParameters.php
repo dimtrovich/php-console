@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Traits;
+namespace Dimtrovich\Console\Traits;
 
 /**
  * Provides interaction with command parameters (arguments and options).
  *
- * @package BlitzPHP\Console\Traits
- * @mixin \BlitzPHP\Console\Command
+ * @package Dimtrovich\Console\Traits
+ * @mixin \Dimtrovich\Console\Command
  */
 trait InteractsWithParameters
 {

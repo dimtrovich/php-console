@@ -2,7 +2,7 @@
 
 namespace Tests\Fixtures;
 
-use BlitzPHP\Console\Command;
+use Dimtrovich\Console\Command;
 
 class CommadTwo extends Command
 {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console;
+namespace Dimtrovich\Console;
 
 use Ahc\Cli\Application;
-use BlitzPHP\Console\Components\Logger;
-use BlitzPHP\Console\Exceptions\CommandNotFoundException;
-use BlitzPHP\Console\Exceptions\InvalidCommandException;
+use Dimtrovich\Console\Components\Logger;
+use Dimtrovich\Console\Exceptions\CommandNotFoundException;
+use Dimtrovich\Console\Exceptions\InvalidCommandException;
 use BlitzPHP\Contracts\Container\ContainerInterface;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -19,7 +19,7 @@ use function Ahc\Cli\t;
 /**
  * Core console application.
  *
- * @package BlitzPHP\Console
+ * @package Dimtrovich\Console
  */
 class Console extends Application
 {
@@ -133,7 +133,7 @@ class Console extends Application
 	 * $console->setLogger($monologLogger, 'APP');
 	 * ```
 	 *
-	 * @see \BlitzPHP\Console\Components\Logger::configure()
+	 * @see \Dimtrovich\Console\Components\Logger::configure()
 	 */
 	public function setLogger(LoggerInterface $logger, string $prefix = ''): self
 	{

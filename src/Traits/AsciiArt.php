@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Traits;
+namespace Dimtrovich\Console\Traits;
 
 use InvalidArgumentException;
 
@@ -15,13 +15,13 @@ use function Ahc\Cli\t;
  * It's designed to be used optionally by commands that need decorative banners,
  * headers, or stylized text output.
  *
- * @package BlitzPHP\Console\Traits
- * @mixin \BlitzPHP\Console\Command
+ * @package Dimtrovich\Console\Traits
+ * @mixin \Dimtrovich\Console\Command
  *
  * @example
  * ```php
- * use BlitzPHP\Console\Command;
- * use BlitzPHP\Console\Traits\AsciiArt;
+ * use Dimtrovich\Console\Command;
+ * use Dimtrovich\Console\Traits\AsciiArt;
  *
  * class BannerCommand extends Command
  * {

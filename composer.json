@@ -1,9 +1,10 @@
 {
-    "name": "blitz-php/console",
-    "description": "A powerful command line interface (CLI) for PHP projects, built on top of adhocore/cli and optimized for BlitzPHP.",
+    "name": "dimtrovich/console",
+    "description": "A powerful command line interface (CLI) for PHP projects, built on top of adhocore/cli.",
     "keywords": [
-        "blitz-php",
+        "dimtrovich",
         "console",
+        "php-console",
         "cli",
         "command-line",
         "adhocore",
@@ -12,7 +13,7 @@
         "tools",
         "blitz"
     ],
-    "homepage": "https://github.com/blitz-php/console",
+    "homepage": "https://github.com/dimtrovich/php-console",
     "license": "MIT",
     "authors": [
         {
@@ -33,7 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BlitzPHP\\Console\\": "src"
+            "Dimtrovich\\Console\\": "src"
         }
     },
     "autoload-dev": {

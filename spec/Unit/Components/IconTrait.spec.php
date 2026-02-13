@@ -1,7 +1,7 @@
 <?php
 
-use BlitzPHP\Console\Components\IconTrait;
-use BlitzPHP\Console\Icon;
+use Dimtrovich\Console\Components\IconTrait;
+use Dimtrovich\Console\Icon;
 
 
 describe('Components / IconTrait', function () {

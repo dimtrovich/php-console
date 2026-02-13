@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Overrides;
+namespace Dimtrovich\Console\Overrides;
 
 use Ahc\Cli\Helper\OutputHelper;
 use Ahc\Cli\Input\Command as AhcCommand;
@@ -12,7 +12,7 @@ use function Ahc\Cli\t;
 /**
  * Overridden Command class with custom help display.
  *
- * @package BlitzPHP\Console\Overrides
+ * @package Dimtrovich\Console\Overrides
  */
 class Command extends AhcCommand
 {

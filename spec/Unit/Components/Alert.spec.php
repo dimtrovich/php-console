@@ -1,6 +1,6 @@
 <?php
 
-use BlitzPHP\Console\Components\Alert;
+use Dimtrovich\Console\Components\Alert;
 use Ahc\Cli\Output\Writer;
 
 use function Kahlan\expect;

@@ -1,11 +1,11 @@
 <?php
 
-namespace BlitzPHP\Console;
+namespace Dimtrovich\Console;
 
 use Ahc\Cli\Output\Color;
-use BlitzPHP\Console\Components\Alert;
-use BlitzPHP\Console\Components\Badge;
-use BlitzPHP\Console\Components\Logger;
+use Dimtrovich\Console\Components\Alert;
+use Dimtrovich\Console\Components\Badge;
+use Dimtrovich\Console\Components\Logger;
 use BlitzPHP\Contracts\Container\ContainerInterface;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -18,7 +18,7 @@ use function Ahc\Cli\t;
  * This class provides a fluent interface for configuring and running
  * a console application based on the adhocore/cli library.
  *
- * @package BlitzPHP\Console
+ * @package Dimtrovich\Console
  *
  * @example
  * ```php
@@ -242,10 +242,10 @@ class Application
 	 * $badge->info('Message', 'INFO', false);        // No icon for this badge
 	 * ```
 	 *
-	 * @see \BlitzPHP\Console\Components\Alert::showDefaultIcons()
-	 * @see \BlitzPHP\Console\Components\Badge::showDefaultIcons()
-	 * @see \BlitzPHP\Console\Components\Logger::showDefaultIcons()
-	 * @see \BlitzPHP\Console\Icon Available icon constants
+	 * @see \Dimtrovich\Console\Components\Alert::showDefaultIcons()
+	 * @see \Dimtrovich\Console\Components\Badge::showDefaultIcons()
+	 * @see \Dimtrovich\Console\Components\Logger::showDefaultIcons()
+	 * @see \Dimtrovich\Console\Icon Available icon constants
 	 */
 	public function withIcons(?bool $alert = null, ?bool $badge = null, ?bool $logger = null): self
 	{
@@ -520,7 +520,7 @@ class Application
      * ```
      *
      * @see \Psr\Log\LoggerInterface
-     * @see \BlitzPHP\Console\Components\Logger
+     * @see \Dimtrovich\Console\Components\Logger
      */
     public function withLogger(LoggerInterface $logger, string $prefix = ''): self
     {

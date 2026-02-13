@@ -1,6 +1,6 @@
 <?php
 
-namespace BlitzPHP\Console\Components;
+namespace Dimtrovich\Console\Components;
 
 trait SingletonTrait
 {

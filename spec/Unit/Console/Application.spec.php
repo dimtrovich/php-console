@@ -1,7 +1,7 @@
 <?php
 
-use BlitzPHP\Console\Application;
-use BlitzPHP\Console\Console;
+use Dimtrovich\Console\Application;
+use Dimtrovich\Console\Console;
 use BlitzPHP\Contracts\Container\ContainerInterface;
 use Kahlan\Plugin\Double;
 
@@ -122,7 +122,7 @@ describe('Application', function () {
 
         beforeEach(function () {
             // Create a mock command for tests
-            $this->mockCommandClass = new class extends \BlitzPHP\Console\Command {
+            $this->mockCommandClass = new class extends \Dimtrovich\Console\Command {
                 protected string $name = 'test:command';
                 protected string $description = 'Test command';
                 public function handle() {
@@ -212,7 +212,7 @@ describe('Application', function () {
 
         it('sets default command with withDefaultCommand()', function () {
             // Ajouter d'abord une commande
-            $command = new class extends BlitzPHP\Console\Command {
+            $command = new class extends Dimtrovich\Console\Command {
                 protected string $name = 'test:default';
                 public function handle() { return 0; }
             };

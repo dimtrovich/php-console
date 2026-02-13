@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Traits;
+namespace Dimtrovich\Console\Traits;
 
 use Throwable;
 
@@ -11,8 +11,8 @@ use function Ahc\Cli\t;
 /**
  * Provides advanced console features and visualizations.
  *
- * @package BlitzPHP\Console\Traits
- * @mixin \BlitzPHP\Console\Command
+ * @package Dimtrovich\Console\Traits
+ * @mixin \Dimtrovich\Console\Command
  */
 trait AdvancedFeatures
 {

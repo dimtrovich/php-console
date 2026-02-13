@@ -1,9 +1,9 @@
 <?php
 
-use BlitzPHP\Console\Console;
-use BlitzPHP\Console\Command;
-use BlitzPHP\Console\Exceptions\CommandNotFoundException;
-use BlitzPHP\Console\Exceptions\InvalidCommandException;
+use Dimtrovich\Console\Console;
+use Dimtrovich\Console\Command;
+use Dimtrovich\Console\Exceptions\CommandNotFoundException;
+use Dimtrovich\Console\Exceptions\InvalidCommandException;
 use Tests\Helpers\ConsoleOutput;
 use Tests\Fixtures\InvalidCommand;
 

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Components;
+namespace Dimtrovich\Console\Components;
 
 use Ahc\Cli\Output\Writer;
-use BlitzPHP\Console\Icon;
+use Dimtrovich\Console\Icon;
 
 /**
  * Alert component for console output.
  *
- * @package BlitzPHP\Console\Components
+ * @package Dimtrovich\Console\Components
  */
 class Alert
 {

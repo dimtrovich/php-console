@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlitzPHP\Console\Exceptions;
+namespace Dimtrovich\Console\Exceptions;
 
 use RuntimeException;
 
@@ -11,7 +11,7 @@ use function Ahc\Cli\t;
 /**
  * Exception thrown when a command is invalid.
  *
- * @package BlitzPHP\Console\Exceptions
+ * @package Dimtrovich\Console\Exceptions
  */
 class InvalidCommandException extends RuntimeException
 {

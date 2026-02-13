@@ -1,6 +1,6 @@
 <?php
 
-use BlitzPHP\Console\Traits\InteractsWithParameters;
+use Dimtrovich\Console\Traits\InteractsWithParameters;
 
 describe('InteractsWithParameters', function () {
 
