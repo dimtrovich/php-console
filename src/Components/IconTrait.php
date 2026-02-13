@@ -59,19 +59,31 @@ trait IconTrait
     }
 
     /**
-     * Determine if an icon should be displayed.
+     * Resolve the icon based on input and global settings.
      *
-     * @param string|null $icon     The explicitly provided icon (null if none)
-     * @param string|null $default  The default icon for this component
+     * @param string|null|false $icon     Icon parameter from method call
+     * @param string|null       $default  Default icon for this alert type
      *
-     * @return string|null The icon to display, or null for no icon
+     * @return string|null The resolved icon (null = no icon)
      */
-    protected function resolveIcon(?string $icon, ?string $default): ?string
+    protected function resolveIcon(string|null|false $icon, ?string $default): ?string
     {
-        if ($icon !== null) {
+        // Explicitly false means no icon, regardless of global setting
+        if ($icon === false) {
+            return null;
+        }
+
+        // Explicitly provided icon
+        if (is_string($icon)) {
             return $icon;
         }
 
-        return self::$showDefaultIcons ? $default : null;
+        // Null means use default if globally enabled
+        if ($icon === null && self::$showDefaultIcons) {
+            return $default;
+        }
+
+        // No icon
+        return null;
     }
 }

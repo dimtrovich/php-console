@@ -15,6 +15,8 @@ use Exception;
  */
 class Badge
 {
+	use IconTrait;
+
     /**
      * Writer instance.
      */
@@ -24,11 +26,6 @@ class Badge
      * Singleton instance.
      */
     private static ?self $instance = null;
-
-    /**
-     * Whether to show default icons.
-     */
-    private static bool $showDefaultIcons = false;
 
     /**
      * Create a new badge instance.
@@ -50,34 +47,6 @@ class Badge
         }
 
         return self::$instance;
-    }
-
-    /**
-     * Enable or disable default icons globally.
-     *
-     * @param bool $enabled Whether to show default icons
-     *
-     * @return void
-     *
-     * @example
-     * ```php
-     * Badge::showDefaultIcons(false); // Disable all default icons
-     * Badge::showDefaultIcons(true);  // Re-enable default icons
-     * ```
-     */
-    public static function showDefaultIcons(bool $enabled): void
-    {
-        self::$showDefaultIcons = $enabled;
-    }
-
-    /**
-     * Check if default icons are enabled.
-     *
-     * @return bool
-     */
-    public static function defaultIconsEnabled(): bool
-    {
-        return self::$showDefaultIcons;
     }
 
     /**
@@ -316,35 +285,6 @@ class Badge
     {
         $resolvedIcon = $this->resolveIcon($icon, null);
         return $this->render($message, $label, $style, $resolvedIcon);
-    }
-
-    /**
-     * Resolve the icon based on input and global settings.
-     *
-     * @param string|null|false $icon     Icon parameter from method call
-     * @param string|null       $default  Default icon for this badge type
-     *
-     * @return string|null The resolved icon (null = no icon)
-     */
-    private function resolveIcon(string|null|false $icon, ?string $default): ?string
-    {
-        // Explicitly false means no icon, regardless of global setting
-        if ($icon === false) {
-            return null;
-        }
-
-        // Explicitly provided icon
-        if (is_string($icon)) {
-            return $icon;
-        }
-
-        // Null means use default if globally enabled
-        if ($icon === null && self::$showDefaultIcons) {
-            return $default;
-        }
-
-        // No icon
-        return null;
     }
 
     /**
